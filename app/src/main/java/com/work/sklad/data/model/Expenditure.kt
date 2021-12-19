@@ -9,11 +9,17 @@ import androidx.room.PrimaryKey
     entity = Product::class,
     parentColumns = arrayOf("articul"),
     childColumns = arrayOf("product")
+),  ForeignKey(
+    entity = Warehouse::class,
+    parentColumns = arrayOf("number"),
+    childColumns = arrayOf("warehouse_number")
 )])
 data class Expenditure(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "limit_number")
     val limitCardNumber: Int,
+    @ColumnInfo(name = "warehouse_number")
+    val warehouseNumber: Int,
     val department: String,
     val product: Int,
     val month: String,
