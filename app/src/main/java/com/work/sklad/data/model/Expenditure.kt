@@ -16,13 +16,12 @@ import androidx.room.PrimaryKey
 )])
 data class Expenditure(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "limit_number")
-    val limitCardNumber: Int,
+    @ColumnInfo(name = "invoice_number")
+    val invoiceNumber: Int,
     @ColumnInfo(name = "warehouse_number")
     val warehouseNumber: Int,
     val department: String,
     val product: Int,
     val month: String,
-    val year: Int,
-    val limit: Int
+    val year: Int
 )

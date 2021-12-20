@@ -17,14 +17,11 @@ interface SkladDao {
     @Query("select * from flow_composition")
     fun getFlowComposition(): Single<List<FlowComposition>>
 
-    @Query("select * from flow_types")
-    fun getFlowTypes(): Single<List<FlowTypes>>
-
     @Query("select * from inventory_balance")
     fun getInventoryBalance(): Single<List<InventoryBalance>>
 
-    @Query("select * from invoice_composition")
-    fun getInvoiceComposition(): Single<List<InvoiceComposition>>
+    @Query("select * from arrive_invoice_composition")
+    fun getInvoiceComposition(): Single<List<ArriveInvoiceComposition>>
 
     @Insert
     fun insert(product: Product)
