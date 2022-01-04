@@ -1,9 +1,8 @@
 package com.work.sklad.data.model
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
+import com.work.sklad.data.utils.Converters
+import java.util.*
 
 @Entity(tableName = "inventory_balance", foreignKeys = [ForeignKey(
     entity = Product::class,
@@ -20,6 +19,6 @@ data class InventoryBalance(
     val articul: Int,
     @ColumnInfo(name = "warehouse_number")
     val warehouseNumber: Int,
-    val date: String,
+    val date: Date,
     val count: Int
 )

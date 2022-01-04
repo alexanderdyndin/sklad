@@ -22,6 +22,6 @@ data class Expenditure(
     val warehouseNumber: Int,
     val department: String,
     val product: Int,
-    val month: String,
+    val month: Int,
     val year: Int
 )
