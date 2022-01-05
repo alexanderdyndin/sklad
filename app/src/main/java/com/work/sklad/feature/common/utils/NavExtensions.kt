@@ -1,4 +1,4 @@
-package com.work.sklad.feature.utils
+package com.work.sklad.feature.common.utils
 
 import android.content.Context
 import androidx.navigation.NavHostController

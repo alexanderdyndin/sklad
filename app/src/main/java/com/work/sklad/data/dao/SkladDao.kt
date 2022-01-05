@@ -23,6 +23,12 @@ interface SkladDao {
     @Query("select * from arrive_invoice_composition")
     fun getInvoiceComposition(): Flow<List<ArriveInvoiceComposition>>
 
+    @Query("select * from Authorization where username = :username and password = :password")
+    fun searchUser(username: String, password: String): Flow<List<Authorization>>
+
+    @Insert
+    suspend fun addUser(authorization: Authorization)
+
     @Insert
     suspend fun insert(product: Product)
 
