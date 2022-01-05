@@ -2,5 +2,5 @@ package com.work.sklad.feature.common
 
 sealed class Screens(val route: String) {
     object Login : Screens("login")
-    object Main : Screens("Main")
+    object Menu : Screens("menu")
 }

@@ -26,8 +26,11 @@ interface SkladDao {
     @Query("select * from Authorization where username = :username and password = :password")
     fun searchUser(username: String, password: String): Flow<List<Authorization>>
 
-    @Insert
-    suspend fun addUser(authorization: Authorization)
+    @Query("select * from Authorization where id = :id")
+    fun searchUser(id: Int): Flow<List<Authorization>>
+
+    @Query("insert into Authorization(username, password, user_type) values (:username, :password, :userType)")
+    suspend fun addUser(username: String, password: String, userType: UserType)
 
     @Insert
     suspend fun insert(product: Product)

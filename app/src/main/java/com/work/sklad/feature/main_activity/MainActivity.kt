@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Snackbar
 import androidx.compose.material.rememberScaffoldState
@@ -30,11 +31,13 @@ import com.work.sklad.feature.common.Events
 import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.utils.isNotNull
 import com.work.sklad.feature.login.LoginScreen
+import com.work.sklad.feature.menu.MenuScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@ExperimentalMaterialApi
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
@@ -87,6 +90,7 @@ class MainActivity : AppCompatActivity() {
             startDestination = Screens.Login.route
         ) {
             composable(Screens.Login.route) { LoginScreen() }
+            composable(Screens.Menu.route) { MenuScreen() }
         }
     }
 }
