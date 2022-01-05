@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.work.sklad.data.model.*
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SkladDao {
@@ -20,7 +21,7 @@ interface SkladDao {
     suspend fun getInventoryBalance(): List<InventoryBalance>
 
     @Query("select * from arrive_invoice_composition")
-    suspend fun getInvoiceComposition(): List<ArriveInvoiceComposition>
+    fun getInvoiceComposition(): Flow<List<ArriveInvoiceComposition>>
 
     @Insert
     suspend fun insert(product: Product)
