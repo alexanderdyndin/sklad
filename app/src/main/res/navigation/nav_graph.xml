@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/loginFragment">
+
+
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.work.sklad.feature.login.LoginFragment"
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_registrationFragment"
+            app:destination="@id/registrationFragment" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/registrationFragment"
+        android:name="com.work.sklad.feature.login.RegistrationFragment"
+        android:label="RegistrationFragment" />
+    <fragment
+        android:id="@+id/menuFragment"
+        android:name="com.work.sklad.feature.menu.MenuFragment"
+        android:label="MenuFragment" />
+    <action android:id="@+id/action_global_menuFragment" app:destination="@id/menuFragment"/>
+</navigation>

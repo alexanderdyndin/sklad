@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Sklad</string>
+    <string name="authorization">Авторизация</string>
 </resources>

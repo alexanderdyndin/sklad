@@ -7,11 +7,15 @@ import androidx.room.TypeConverters
 import com.work.sklad.data.utils.Converters
 
 @Entity
-data class Authorization(
+data class User(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val username: String,
     val password: String,
+    val name: String,
+    val surname: String,
+    val patronymic: String?,
+    val phone: String,
     @ColumnInfo(name = "user_type")
     val userType: UserType
 )

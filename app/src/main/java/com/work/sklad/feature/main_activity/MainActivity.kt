@@ -19,12 +19,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import com.google.accompanist.insets.ProvideWindowInsets
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.google.accompanist.insets.imePadding
 import com.google.accompanist.insets.systemBarsPadding
+import com.work.sklad.R
 import com.work.sklad.feature.common.Screens
 import com.work.sklad.feature.common.AppTheme
 import com.work.sklad.feature.common.Events
@@ -34,63 +36,25 @@ import com.work.sklad.feature.login.LoginScreen
 import com.work.sklad.feature.menu.MenuScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@ExperimentalMaterialApi
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var navController: NavHostController
+class MainActivity : FragmentActivity() {
 
     @Inject
     lateinit var events: Events
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            AppTheme {
-                ProvideWindowInsets {
-                    Surface(color = MaterialTheme.colorScheme.background) {
-                        val scaffoldState = rememberScaffoldState()
-                        val coroutineScope = rememberCoroutineScope()
-                        events.getFlow().collectAsState(initial = null).value?.let {
-                            when (it) {
-                                is ShowMessage -> {
-                                    coroutineScope.launch {
-                                        val current = scaffoldState.snackbarHostState.currentSnackbarData
-                                        if (current?.message != it.text) {
-                                            scaffoldState.snackbarHostState.showSnackbar(
-                                                message = it.text
-                                            )
-                                        }
-                                    }
-                                }
-                                else -> {}
-                            }
-                        }
-                        Scaffold(modifier = Modifier
-                            .systemBarsPadding()
-                            .imePadding(),
-                            scaffoldState = scaffoldState
-                        ) {
-                            MainContent()
-                        }
-                    }
+        setContentView(R.layout.activity_main)
+        lifecycleScope.launch {
+            events.getFlow().collectLatest {
+                when (it) {
+                    is ShowMessage -> Toast.makeText(this@MainActivity, it.text, Toast.LENGTH_SHORT).show()
                 }
             }
-        }
-    }
-
-    @Composable
-    fun MainContent() {
-        NavHost(
-            navController,
-            startDestination = Screens.Login.route
-        ) {
-            composable(Screens.Login.route) { LoginScreen() }
-            composable(Screens.Menu.route) { MenuScreen() }
         }
     }
 }

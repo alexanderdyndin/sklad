@@ -11,26 +11,14 @@ interface SkladDao {
     @Query("select * from Product")
     suspend fun getArrival(): List<Product>
 
-    @Query("select * from Expenditure")
-    suspend fun getExpenditure(): List<Expenditure>
+    @Query("select * from User where username = :username and password = :password")
+    fun searchUser(username: String, password: String): Flow<List<User>>
 
-    @Query("select * from flow_composition")
-    suspend fun getFlowComposition(): List<FlowComposition>
+    @Query("select * from User where id = :id")
+    fun searchUser(id: Int): Flow<List<User>>
 
-    @Query("select * from inventory_balance")
-    suspend fun getInventoryBalance(): List<InventoryBalance>
-
-    @Query("select * from arrive_invoice_composition")
-    fun getInvoiceComposition(): Flow<List<ArriveInvoiceComposition>>
-
-    @Query("select * from Authorization where username = :username and password = :password")
-    fun searchUser(username: String, password: String): Flow<List<Authorization>>
-
-    @Query("select * from Authorization where id = :id")
-    fun searchUser(id: Int): Flow<List<Authorization>>
-
-    @Query("insert into Authorization(username, password, user_type) values (:username, :password, :userType)")
-    suspend fun addUser(username: String, password: String, userType: UserType)
+    @Query("insert into User(username, password, user_type, name, surname, patronymic, phone) values (:username, :password, :userType, :name, :surname, :patronymic, :phone)")
+    suspend fun addUser(username: String, password: String, userType: UserType, name: String, surname: String, patronymic: String?, phone: String)
 
     @Insert
     suspend fun insert(product: Product)

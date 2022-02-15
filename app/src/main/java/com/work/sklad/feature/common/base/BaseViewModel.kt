@@ -28,9 +28,6 @@ abstract class BaseViewModel<TState, TMutator : BaseMutator<TState>, TAction>(
     lateinit var skladDao: SkladDao
 
     @Inject
-    lateinit var navigationComponent: NavHostController
-
-    @Inject
     lateinit var events: Events
 
     private val _state = MutableStateFlow(initialState)
@@ -57,13 +54,5 @@ abstract class BaseViewModel<TState, TMutator : BaseMutator<TState>, TAction>(
 
     override fun mutateState(mutate: TMutator.() -> Unit) {
         _state.value = getMutator(_state.value).apply(mutate).state
-    }
-
-    fun navigate(screens: Screens) {
-        navigationComponent.navigate(screens.route)
-    }
-
-    fun navigateBack() {
-        navigationComponent.popBackStack()
     }
 }

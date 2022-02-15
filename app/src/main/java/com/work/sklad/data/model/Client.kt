@@ -4,8 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class Organization(
+data class Client(
     @PrimaryKey(autoGenerate = true)
-    val number: Int,
-    val name: String
+    val id: Int,
+    val company: String,
+    val email: String,
+    val phone: String
 )

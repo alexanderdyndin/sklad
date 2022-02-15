@@ -24,22 +24,19 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
         if (id != -1) {
             viewModelScope.launch {
                 skladDao.searchUser(id).collectLatest {
-                    Log.e("id" , id.toString())
+                    proceed()
                 }
             }
         }
     }
 
-    fun authorize(login: String, password: String) {
+    fun authorize(login: String, password: String, rememberUser: Boolean = state.value.rememberUser) {
         viewModelScope.launch(Dispatchers.IO) {
             skladDao.searchUser(login, password).collectLatest {
                 if (it.isNotEmpty()) {
                     val user = it.first()
-                    if (state.value.rememberUser) {
+                    if (rememberUser) {
                         sharedPreferences.set(UserId, user.id)
-                    }
-                    withContext(Dispatchers.Main) {
-                        navigate(Screens.Menu)
                     }
                 } else {
                     events.send(ShowMessage(Strings.NoUser))
@@ -49,10 +46,18 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
         }
     }
 
-    fun register(login: String, password: String, userType: UserType) {
+    fun registration() {
+        action(LoginAction.OpenBottomSheet)
+    }
+
+    fun proceed() {
+        action(LoginAction.Proceed)
+    }
+
+    fun register(login: String, password: String, userType: UserType, name: String, surname: String, patronymic: String?, phone: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            try{
-                skladDao.addUser(login, password, userType)
+            try {
+                skladDao.addUser(login, password, userType, name, surname, patronymic, phone)
             } catch (exception: Throwable) {
 
             }
@@ -62,11 +67,7 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
 }
 
 data class LoginState(
-    val login: String = "",
-    val password: String = "",
-    val rememberUser: Boolean = false,
-    val userId: Int? = null,
-    val loading: Boolean = false
+    val rememberUser: Boolean = true
 )
 
 class LoginMutator : BaseMutator<LoginState>() {
@@ -76,5 +77,8 @@ class LoginMutator : BaseMutator<LoginState>() {
 }
 
 sealed class LoginAction {
-    data class ShowMessage(val message: String)
+    object OpenBottomSheet : LoginAction()
+    object Proceed : LoginAction()
 }
+
+typealias RegisterAction = (login: String, password: String, userType: UserType, name: String, surname: String, patronymic: String?, phone: String) -> Unit
