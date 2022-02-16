@@ -13,12 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.work.sklad.data.model.User
 import com.work.sklad.feature.common.utils.Listener
 
 @Composable
-fun MenuScreen(viewModel: MenuViewModel = hiltViewModel()) {
+fun MenuScreen(viewModel: MenuViewModel) {
     val state by viewModel.state.collectAsState()
     viewModel.init()
     MenuContent(

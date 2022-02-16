@@ -40,15 +40,15 @@ class MenuFragment: BaseFragment() {
 
     override val backPressAction: (() -> Unit) = {
         lifecycleScope.launch(Dispatchers.Default) {
-            withContext(Dispatchers.Main) {
-                if (backPressedToExit) {
-                    requireActivity().finish()
-                } else {
+            if (backPressedToExit) {
+                requireActivity().finish()
+            } else {
+                withContext(Dispatchers.Main) {
                     Toast.makeText(requireContext(), "Нажмите еще раз для выхода", Toast.LENGTH_SHORT).show()
-                    backPressedToExit = true
                 }
+                backPressedToExit = true
             }
-            delay(5000)
+            delay(3000)
             backPressedToExit = false
         }
     }
@@ -58,13 +58,13 @@ class MenuFragment: BaseFragment() {
         lifecycleScope.launchWhenCreated {
             viewModel.action.collectLatest {
                 when (it) {
-                    MenuAction.Client -> R.id.clientFragment.navigate()
+                    MenuAction.Client -> R.id.action_menuFragment_to_clientFragment.navigate()
                     MenuAction.Invoice -> TODO()
                     MenuAction.InvoiceComing -> TODO()
                     MenuAction.Order -> TODO()
-                    MenuAction.Product -> TODO()
-                    MenuAction.ProductType -> TODO()
-                    MenuAction.Supplier -> TODO()
+                    MenuAction.Product -> R.id.action_menuFragment_to_productFragment.navigate()
+                    MenuAction.ProductType -> R.id.action_menuFragment_to_productTypeFragment.navigate()
+                    MenuAction.Supplier -> R.id.action_menuFragment_to_supplierFragment2.navigate()
                     MenuAction.Warehouse -> TODO()
                     MenuAction.Logout -> back()
                 }

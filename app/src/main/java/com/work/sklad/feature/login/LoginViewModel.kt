@@ -1,9 +1,7 @@
 package com.work.sklad.feature.login
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.UserType
-import com.work.sklad.feature.common.Screens
 import com.work.sklad.feature.common.Strings
 import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
@@ -14,7 +12,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel

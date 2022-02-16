@@ -25,6 +25,15 @@
         <action
             android:id="@+id/action_menuFragment_to_clientFragment"
             app:destination="@id/clientFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_supplierFragment2"
+            app:destination="@id/supplierFragment2" />
+        <action
+            android:id="@+id/action_menuFragment_to_productTypeFragment"
+            app:destination="@id/productTypeFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_productFragment"
+            app:destination="@id/productFragment" />
     </fragment>
     <action android:id="@+id/action_global_menuFragment" app:destination="@id/menuFragment"/>
     <fragment
@@ -39,4 +48,44 @@
         android:id="@+id/addClientFragment"
         android:name="com.work.sklad.feature.clients.AddClientFragment"
         android:label="AddClientFragment" />
+    <fragment
+        android:id="@+id/supplierFragment2"
+        android:name="com.work.sklad.feature.supplier.SupplierFragment"
+        android:label="SupplierFragment" >
+        <action
+            android:id="@+id/action_supplierFragment2_to_addSupplierFragment2"
+            app:destination="@id/addSupplierFragment2" />
+    </fragment>
+    <dialog
+        android:id="@+id/addSupplierFragment2"
+        android:name="com.work.sklad.feature.supplier.AddSupplierFragment"
+        android:label="AddSupplierFragment" />
+    <fragment
+        android:id="@+id/productTypeFragment"
+        android:name="com.work.sklad.feature.product_type.ProductTypeFragment"
+        android:label="ProductTypeFragment" >
+        <action
+            android:id="@+id/action_productTypeFragment_to_addProductTypeFragment"
+            app:destination="@id/addProductTypeFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/addProductTypeFragment"
+        android:name="com.work.sklad.feature.product_type.AddProductTypeFragment"
+        android:label="AddProductTypeFragment" />
+    <dialog
+        android:id="@+id/addProductFragment"
+        android:name="com.work.sklad.feature.product.AddProductFragment"
+        android:label="AddProductFragment" >
+        <argument
+            android:name="types"
+            app:argType="com.work.sklad.data.model.ProductType[]" />
+    </dialog>
+    <fragment
+        android:id="@+id/productFragment"
+        android:name="com.work.sklad.feature.product.ProductFragment"
+        android:label="ProductFragment" >
+        <action
+            android:id="@+id/action_productFragment_to_addProductFragment"
+            app:destination="@id/addProductFragment" />
+    </fragment>
 </navigation>

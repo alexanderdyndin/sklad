@@ -34,7 +34,7 @@ fun composeBottomView(context: Context, content: @Composable () -> Unit): Compos
         setContent {
             AppTheme() {
                 androidx.compose.material3.Surface(color = androidx.compose.material3.MaterialTheme.colorScheme.background,
-                    content = content, shape = RoundedCornerShape(16.dp))
+                    content = content, shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             }
         }
     }
@@ -82,10 +82,4 @@ fun ComposeScreen(navigationListener: (() -> Unit)? = null, title: String? = nul
 
         }
     )
-}
-@Composable
-fun ComposeBottomScreen(content: @Composable () -> Unit) {
-    AppTheme() {
-
-    }
 }

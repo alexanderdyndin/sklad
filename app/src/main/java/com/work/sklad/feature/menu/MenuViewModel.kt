@@ -2,7 +2,6 @@ package com.work.sklad.feature.menu
 
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.User
-import com.work.sklad.data.model.UserType
 import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel

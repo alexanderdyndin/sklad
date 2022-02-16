@@ -43,8 +43,10 @@ abstract class BaseFragment: Fragment() {
         savedInstanceState: Bundle?
     ) = view()
 
-    protected fun Int.navigate() {
-        findNavController().navigate(this)
+    protected fun Int.navigate(bundle: Bundle? = null) {
+        bundle?.let {
+            findNavController().navigate(this, it)
+        } ?: findNavController().navigate(this)
     }
 
     protected fun back() {
