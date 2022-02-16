@@ -8,6 +8,7 @@ import com.work.sklad.feature.common.Strings
 import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
+import com.work.sklad.feature.login.LoginAction.*
 import com.work.sklad.feature.main_activity.ShowMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +25,7 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
         if (id != -1) {
             viewModelScope.launch {
                 skladDao.searchUser(id).collectLatest {
-                    proceed()
+                    action(Proceed)
                 }
             }
         }
@@ -38,6 +39,7 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
                     if (rememberUser) {
                         sharedPreferences.set(UserId, user.id)
                     }
+                    action(Proceed)
                 } else {
                     events.send(ShowMessage(Strings.NoUser))
                 }
@@ -47,11 +49,7 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
     }
 
     fun registration() {
-        action(LoginAction.OpenBottomSheet)
-    }
-
-    fun proceed() {
-        action(LoginAction.Proceed)
+        action(OpenBottomSheet)
     }
 
     fun register(login: String, password: String, userType: UserType, name: String, surname: String, patronymic: String?, phone: String) {

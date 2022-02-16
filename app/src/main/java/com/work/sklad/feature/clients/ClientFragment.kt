@@ -1,10 +1,16 @@
-package com.work.sklad.feature.login
+package com.work.sklad.feature.clients
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.fragment.app.viewModels
@@ -17,22 +23,22 @@ import com.work.sklad.feature.common.base.BaseFragment
 import com.work.sklad.feature.common.compose.ComposeScreen
 import com.work.sklad.feature.common.compose.composeView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @ExperimentalMaterialApi
 @AndroidEntryPoint
-class LoginFragment: BaseFragment() {
+class ClientFragment: BaseFragment() {
 
-    private val viewModel: LoginViewModel by viewModels()
+    private val viewModel: ClientViewModel by viewModels()
 
     override val eventsAction: ((Event) -> Unit) = {
-        with (it) {
-            when (this) {
-                is RegistrationEvent -> {
-                    viewModel.register(login, password, userType, name, surname, patronymic, phone)
-                }
-            }
+        when (it) {
+            is AddClientEvent -> viewModel.registration(it.company, it.email, it.phone)
         }
     }
 
@@ -41,16 +47,19 @@ class LoginFragment: BaseFragment() {
         lifecycleScope.launchWhenCreated {
             viewModel.action.collectLatest {
                 when (it) {
-                    LoginAction.OpenBottomSheet -> findNavController().navigate(R.id.action_loginFragment_to_registrationFragment)
-                    LoginAction.Proceed -> findNavController().navigate(R.id.action_global_menuFragment)
+                    ClientAction.OpenBottom -> R.id.action_clientFragment_to_addClientFragment.navigate()
                 }
             }
         }
     }
 
     override fun view(): View = composeView(requireContext()) {
-        ComposeScreen(title = "Авторизация") {
-            LoginScreen(viewModel)
+        ComposeScreen(title = "Клиенты", floatingActionButton = {
+            FloatingActionButton(
+                shape = CircleShape,
+                onClick = { viewModel.openBottom() }) { Icon(Icons.Filled.Add,"") }
+        }) {
+            ClientsScreen(viewModel = viewModel)
         }
     }
 

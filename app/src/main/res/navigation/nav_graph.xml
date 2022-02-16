@@ -21,6 +21,22 @@
     <fragment
         android:id="@+id/menuFragment"
         android:name="com.work.sklad.feature.menu.MenuFragment"
-        android:label="MenuFragment" />
+        android:label="MenuFragment" >
+        <action
+            android:id="@+id/action_menuFragment_to_clientFragment"
+            app:destination="@id/clientFragment" />
+    </fragment>
     <action android:id="@+id/action_global_menuFragment" app:destination="@id/menuFragment"/>
+    <fragment
+        android:id="@+id/clientFragment"
+        android:name="com.work.sklad.feature.clients.ClientFragment"
+        android:label="ClientFragment" >
+        <action
+            android:id="@+id/action_clientFragment_to_addClientFragment"
+            app:destination="@id/addClientFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/addClientFragment"
+        android:name="com.work.sklad.feature.clients.AddClientFragment"
+        android:label="AddClientFragment" />
 </navigation>

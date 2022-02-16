@@ -3,11 +3,13 @@ package com.work.sklad.feature.common.compose
 import android.content.Context
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.TextStyle
@@ -27,14 +29,25 @@ fun composeView(context: Context, content: @Composable () -> Unit): ComposeView 
             }
         }
     }
+fun composeBottomView(context: Context, content: @Composable () -> Unit): ComposeView =
+    ComposeView(context).apply {
+        setContent {
+            AppTheme() {
+                androidx.compose.material3.Surface(color = androidx.compose.material3.MaterialTheme.colorScheme.background,
+                    content = content, shape = RoundedCornerShape(16.dp))
+            }
+        }
+    }
 
 @Composable
 fun ComposeScreen(navigationListener: (() -> Unit)? = null, title: String? = null,
-                         toolbarBackgroundColor: Color? = null,
-                         actions: @Composable RowScope.() -> Unit = {},
-                         content: @Composable (PaddingValues) -> Unit
+                  toolbarBackgroundColor: Color? = null,
+                  actions: @Composable RowScope.() -> Unit = {},
+                  floatingActionButton: @Composable () -> Unit = {},
+                  content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
+        floatingActionButton = floatingActionButton,
         topBar = {
             TopAppBar(
                 title = {
@@ -63,13 +76,16 @@ fun ComposeScreen(navigationListener: (() -> Unit)? = null, title: String? = nul
                     toolbarBackgroundColor
                 } ?: MaterialTheme.colors.primarySurface,
             )
-        }, content = content
+        },
+        content = content,
+        bottomBar = {
+
+        }
     )
 }
 @Composable
 fun ComposeBottomScreen(content: @Composable () -> Unit) {
     AppTheme() {
-        androidx.compose.material3.Surface(color = androidx.compose.material3.MaterialTheme.colorScheme.background,
-            content = content, shape = RoundedCornerShape(16.dp))
+
     }
 }
