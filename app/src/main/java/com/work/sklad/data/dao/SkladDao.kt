@@ -24,6 +24,12 @@ interface SkladDao {
     @Query("select * from product_type")
     fun getTypes(): Flow<List<ProductType>>
 
+    @Query("select * from product_type")
+    fun getProductsWithTypes(): Flow<List<TypeWithProducts>>
+
+//    @Query("select * from product")
+//    fun getWarehouses(): Flow<List<TypeWithWarehouses>>
+
     @Query("select * from product")
     fun getProducts(): Flow<List<Product>>
 

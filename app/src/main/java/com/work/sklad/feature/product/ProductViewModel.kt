@@ -3,6 +3,9 @@ package com.work.sklad.feature.product
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.ProductType
+import com.work.sklad.data.model.TypeWithProducts
+import com.work.sklad.data.model.toProductWithType
+import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
 import com.work.sklad.feature.main_activity.ShowMessage
@@ -17,8 +20,8 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
 
     fun init() {
         viewModelScope.launch {
-            skladDao.getProducts().collectLatest {
-                mutateState { setProducts(it) }
+            skladDao.getProductsWithTypes().collectLatest {
+                mutateState { setProducts(it.toProductWithType()) }
             }
         }
     }
@@ -44,12 +47,12 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
 }
 
 data class ProductState(
-    val products: List<Product> = emptyList()
+    val products: List<ProductWithType> = emptyList()
 )
 
 class ProductMutator: BaseMutator<ProductState>() {
 
-    fun setProducts(products: List<Product>) {
+    fun setProducts(products: List<ProductWithType>) {
         state = state.copy(products = products)
     }
 
