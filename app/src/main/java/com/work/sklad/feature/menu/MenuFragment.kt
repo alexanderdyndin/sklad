@@ -22,6 +22,7 @@ import com.work.sklad.feature.common.Events
 import com.work.sklad.feature.common.base.BaseFragment
 import com.work.sklad.feature.common.compose.ComposeScreen
 import com.work.sklad.feature.common.compose.composeView
+import com.work.sklad.feature.menu.MenuAction.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -58,15 +59,15 @@ class MenuFragment: BaseFragment() {
         lifecycleScope.launchWhenCreated {
             viewModel.action.collectLatest {
                 when (it) {
-                    MenuAction.Client -> R.id.action_menuFragment_to_clientFragment.navigate()
-                    MenuAction.Invoice -> TODO()
-                    MenuAction.InvoiceComing -> TODO()
-                    MenuAction.Order -> TODO()
-                    MenuAction.Product -> R.id.action_menuFragment_to_productFragment.navigate()
-                    MenuAction.ProductType -> R.id.action_menuFragment_to_productTypeFragment.navigate()
-                    MenuAction.Supplier -> R.id.action_menuFragment_to_supplierFragment2.navigate()
-                    MenuAction.Warehouse -> TODO()
-                    MenuAction.Logout -> back()
+                    Client -> R.id.action_menuFragment_to_clientFragment.navigate()
+                    Invoice -> TODO()
+                    InvoiceComing -> R.id.action_menuFragment_to_invoiceComingFragment.navigate()
+                    Order -> TODO()
+                    Product -> R.id.action_menuFragment_to_productFragment.navigate()
+                    ProductType -> R.id.action_menuFragment_to_productTypeFragment.navigate()
+                    Supplier -> R.id.action_menuFragment_to_supplierFragment2.navigate()
+                    Warehouse -> R.id.action_menuFragment_to_warehouseFragment.navigate()
+                    Logout -> back()
                 }
             }
         }

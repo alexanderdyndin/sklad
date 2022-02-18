@@ -25,11 +25,13 @@ abstract class BaseFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                backPressAction?.invoke() ?: back()
-            }
-        })
+        backPressAction?.let {
+            requireActivity().onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    backPressAction?.invoke()
+                }
+            })
+        }
         lifecycleScope.launchWhenCreated {
             events.getFlow().collectLatest { eventsAction?.invoke(it) }
         }

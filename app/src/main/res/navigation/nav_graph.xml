@@ -34,6 +34,12 @@
         <action
             android:id="@+id/action_menuFragment_to_productFragment"
             app:destination="@id/productFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_warehouseFragment"
+            app:destination="@id/warehouseFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_invoiceComingFragment"
+            app:destination="@id/invoiceComingFragment" />
     </fragment>
     <action android:id="@+id/action_global_menuFragment" app:destination="@id/menuFragment"/>
     <fragment
@@ -88,4 +94,39 @@
             android:id="@+id/action_productFragment_to_addProductFragment"
             app:destination="@id/addProductFragment" />
     </fragment>
+    <dialog
+        android:id="@+id/addWarehouseFragment"
+        android:name="com.work.sklad.feature.warehouse.AddWarehouseFragment"
+        android:label="AddWarehouseFragment" >
+        <argument
+            android:name="products"
+            app:argType="com.work.sklad.data.model.Product[]" />
+    </dialog>
+    <fragment
+        android:id="@+id/warehouseFragment"
+        android:name="com.work.sklad.feature.warehouse.WarehouseFragment"
+        android:label="WarehouseFragment" >
+        <action
+            android:id="@+id/action_warehouseFragment_to_addWarehouseFragment"
+            app:destination="@id/addWarehouseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/invoiceComingFragment"
+        android:name="com.work.sklad.feature.invoice_coming.InvoiceComingFragment"
+        android:label="InvoiceComingFragment" >
+        <action
+            android:id="@+id/action_invoiceComingFragment_to_invoiceComingAddFragment"
+            app:destination="@id/invoiceComingAddFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/invoiceComingAddFragment"
+        android:name="com.work.sklad.feature.invoice_coming.InvoiceComingAddFragment"
+        android:label="InvoiceComingAddFragment" >
+        <argument
+            android:name="warehouses"
+            app:argType="com.work.sklad.domain.model.WarehouseWithProduct[]" />
+        <argument
+            android:name="suppliers"
+            app:argType="com.work.sklad.data.model.Supplier[]" />
+    </dialog>
 </navigation>

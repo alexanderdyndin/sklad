@@ -3,6 +3,8 @@ package com.work.sklad.feature.warehouse
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.Warehouse
+import com.work.sklad.domain.model.ProductWithType
+import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
 import com.work.sklad.feature.main_activity.ShowMessage
@@ -17,23 +19,23 @@ class WarehouseViewModel @Inject constructor(): BaseViewModel<WarehouseState, Wa
 
     fun init() {
         viewModelScope.launch {
-//            skladDao.getWarehouses().collectLatest {
-//                mutateState { setWarehouses(it) }
-//            }
+            skladDao.getWarehouseWithProduct().collectLatest {
+                mutateState { setWarehouses(it) }
+            }
         }
     }
 
-    fun registration(name: String, unit: String, price: Double, typeId: Int) {
+    fun registration(name: String, freePlace: Int, productId: Int) {
         viewModelScope.launch {
-//            skladDao.addWarehouse(name, unit, price, typeId)
+            skladDao.addWarehouse(name, freePlace, productId)
         }
     }
 
     fun openBottom() {
         viewModelScope.launch {
-            skladDao.getProducts().collectLatest {
+            skladDao.getProductList().also {
                 if (it.isEmpty()) {
-                    events.send(ShowMessage("Необходимо добавить хотя бы один тип продукта"))
+                    events.send(ShowMessage("Необходимо добавить хотя бы один продукт"))
                 } else {
                     action(OpenBottom(it))
                 }
@@ -44,17 +46,17 @@ class WarehouseViewModel @Inject constructor(): BaseViewModel<WarehouseState, Wa
 }
 
 data class WarehouseState(
-    val warehouses: List<Warehouse> = emptyList()
+    val warehouses: List<WarehouseWithProduct> = emptyList()
 )
 
 class WarehouseMutator: BaseMutator<WarehouseState>() {
 
-    fun setWarehouses(warehouses: List<Warehouse>) {
+    fun setWarehouses(warehouses: List<WarehouseWithProduct>) {
         state = state.copy(warehouses = warehouses)
     }
 
 }
 
 sealed class WarehouseAction {
-    data class OpenBottom(val types: List<Product>) : WarehouseAction()
+    data class OpenBottom(val products: List<Product>) : WarehouseAction()
 }

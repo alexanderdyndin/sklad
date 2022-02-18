@@ -1,6 +1,7 @@
 package com.work.sklad.data.model
 
 import androidx.room.*
+import java.io.Serializable
 
 @Entity(foreignKeys = [ForeignKey(
     entity = ProductType::class,
@@ -16,4 +17,4 @@ data class Product(
     val price: Double,
     @ColumnInfo(name = "product_type_id")
     val productTypeId: Int
-)
+): Serializable

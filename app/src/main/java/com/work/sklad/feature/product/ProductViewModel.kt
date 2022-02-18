@@ -1,10 +1,7 @@
 package com.work.sklad.feature.product
 
 import androidx.lifecycle.viewModelScope
-import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.ProductType
-import com.work.sklad.data.model.TypeWithProducts
-import com.work.sklad.data.model.toProductWithType
 import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
@@ -20,8 +17,8 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
 
     fun init() {
         viewModelScope.launch {
-            skladDao.getProductsWithTypes().collectLatest {
-                mutateState { setProducts(it.toProductWithType()) }
+            skladDao.getProductWithType().collectLatest {
+                mutateState { setProducts(it) }
             }
         }
     }
@@ -34,7 +31,7 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
 
     fun openBottom() {
         viewModelScope.launch {
-            skladDao.getTypes().collectLatest {
+            skladDao.getProductTypes().also {
                 if (it.isEmpty()) {
                     events.send(ShowMessage("Необходимо добавить хотя бы один тип продукта"))
                 } else {

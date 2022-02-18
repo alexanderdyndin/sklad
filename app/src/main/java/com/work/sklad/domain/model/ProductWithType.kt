@@ -7,5 +7,5 @@ data class ProductWithType(
     val name: String,
     val unit: String,
     val price: Double,
-    val type: ProductType
+    val type: String
 )

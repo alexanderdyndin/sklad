@@ -1,46 +1,32 @@
-package com.work.sklad.feature.warehouse
+package com.work.sklad.feature.invoice_coming
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.work.sklad.R
 import com.work.sklad.feature.common.Event
-import com.work.sklad.feature.common.Events
 import com.work.sklad.feature.common.base.BaseFragment
 import com.work.sklad.feature.common.compose.ComposeScreen
 import com.work.sklad.feature.common.compose.composeView
-import com.work.sklad.feature.warehouse.WarehouseAction.*
+import com.work.sklad.feature.invoice_coming.InvoiceComingAction.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@ExperimentalMaterialApi
 @AndroidEntryPoint
-class WarehouseFragment: BaseFragment() {
+class InvoiceComingFragment: BaseFragment() {
 
-    private val viewModel: WarehouseViewModel by viewModels()
+    private val viewModel: InvoiceComingViewModel by viewModels()
 
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
-            is AddWarehouseEvent -> viewModel.registration(it.name, it.freePlace, it.productId)
+            is AddInvoiceComingEvent -> viewModel.addInvoice(it.price, it.count, it.manufactureDate, it.expirationDate, it.warehouseId, it.supplierId)
         }
     }
 
@@ -50,8 +36,11 @@ class WarehouseFragment: BaseFragment() {
             viewModel.action.collectLatest {
                 when (it) {
                     is OpenBottom -> {
-                        val bundle = bundleOf("products" to it.products.toTypedArray())
-                        R.id.action_warehouseFragment_to_addWarehouseFragment.navigate(bundle)
+                        val bundle = bundleOf(
+                            "warehouses" to it.warehouses.toTypedArray(),
+                            "suppliers" to it.suppliers.toTypedArray()
+                        )
+                        R.id.action_invoiceComingFragment_to_invoiceComingAddFragment.navigate(bundle)
                     }
                 }
             }
@@ -59,12 +48,12 @@ class WarehouseFragment: BaseFragment() {
     }
 
     override fun view(): View = composeView(requireContext()) {
-        ComposeScreen(title = "Склады", floatingActionButton = {
+        ComposeScreen(title = "Расход", floatingActionButton = {
             FloatingActionButton(
                 shape = CircleShape,
                 onClick = { viewModel.openBottom() }) { Icon(Icons.Filled.Add,"") }
         }) {
-            WarehousesScreen(viewModel = viewModel)
+            InvoicesScreen(viewModel = viewModel)
         }
     }
 

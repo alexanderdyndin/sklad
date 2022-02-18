@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.data.model.UserType
 import com.work.sklad.domain.model.ProductWithType
@@ -37,7 +38,7 @@ fun WarehousesScreen(viewModel: WarehouseViewModel) {
 }
 
 @Composable
-fun AddWarehouseScreen(products: Array<ProductWithType>, Warehouse: TypedListener<AddWarehouseEvent>) {
+fun AddWarehouseScreen(products: Array<Product>, Warehouse: TypedListener<AddWarehouseEvent>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -45,17 +46,15 @@ fun AddWarehouseScreen(products: Array<ProductWithType>, Warehouse: TypedListene
             .fillMaxWidth()
     ) {
         var name by rememberSaveable { mutableStateOf("") }
-        var unit by rememberSaveable { mutableStateOf("") }
-        var price by rememberSaveable { mutableStateOf(0.00) }
+        var place by rememberSaveable { mutableStateOf(0) }
         EditText(value = name, label = "Название"){ name = it }
-        EditText(value = unit, label = "Единицы измерения"){ unit = it }
-        EditText(value = price.toString(), label = "Цена", keyboardType = KeyboardType.Number){ price = it.toDouble() }
+        EditText(value = place.toString(), label = "Цена", keyboardType = KeyboardType.Number){ place = it.toInt() }
         if (products.isNotEmpty()) {
             var type by rememberSaveable { mutableStateOf(products.first()) }
             Spinner(stateList = products, initialState = type, nameMapper = {it.name} ) {
                 type = it
             }
-            Button(onClick = { Warehouse.invoke(AddWarehouseEvent(name, unit, price, type.id)) }) {
+            Button(onClick = { Warehouse.invoke(AddWarehouseEvent(name, place, type.id)) }) {
                 Text(text = "Добавить")
             }
         }

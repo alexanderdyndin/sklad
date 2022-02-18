@@ -21,11 +21,10 @@ fun <T> Spinner(stateList: Array<T>, initialState: T, nameMapper: (T) -> String,
     Box(Modifier.fillMaxWidth(),contentAlignment = Alignment.Center) {
         Row(
             Modifier
-                .padding(24.dp)
+                .padding(16.dp)
                 .clickable {
                     expanded = !expanded
-                }
-                .padding(8.dp),
+                },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
