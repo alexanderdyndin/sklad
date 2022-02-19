@@ -54,8 +54,15 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
     fun register(login: String, password: String, userType: UserType, name: String, surname: String, patronymic: String?, phone: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                skladDao.addUser(login, password, userType, name, surname, patronymic, phone)
-                closeBottom()
+                skladDao.searchUser(login).also {
+                    if (it.isEmpty()) {
+                        skladDao.addUser(login, password, userType, name, surname, patronymic, phone)
+                        closeBottom()
+                        message("Регистрация успешна")
+                    } else {
+                        message("Пользователь с таким логином уже существует")
+                    }
+                }
             } catch (exception: Throwable) {
 
             }

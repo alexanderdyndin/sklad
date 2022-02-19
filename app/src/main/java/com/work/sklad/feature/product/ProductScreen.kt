@@ -13,8 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.domain.model.ProductWithType
+import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.compose.views.Spinner
@@ -28,7 +30,7 @@ fun ProductsScreen(viewModel: ProductViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.products) {
-            ProductItem(it, {viewModel.delete(it)}) {viewModel.update(it)}
+            ProductItem(it, {viewModel.delete(it)}) {viewModel.updateRequest(it)}
         }
     }
 }
@@ -61,7 +63,7 @@ fun ProductItem(product: ProductWithType, onDelete: Listener, onUpdate: Listener
                 expanded = false
             }
         }
-        Text(text = "Остаток: ${product.count}", style = MaterialTheme.typography.titleLarge,
+        Text(text = "Остаток: ${product.came - product.left}", style = MaterialTheme.typography.titleLarge,
         modifier = Modifier.constrainAs(count) {
             top.linkTo(parent.top)
             end.linkTo(parent.end)
@@ -72,23 +74,25 @@ fun ProductItem(product: ProductWithType, onDelete: Listener, onUpdate: Listener
 }
 
 @Composable
-fun AddProductScreen(types: Array<ProductType>, product: TypedListener<AddProductEvent>) {
+fun AddProductScreen(product: Product?, types: Array<ProductType>, productListener: TypedListener<Event>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth()
     ) {
-        var name by rememberSaveable { mutableStateOf("") }
-        var unit by rememberSaveable { mutableStateOf("") }
+        var name by rememberSaveable { mutableStateOf(product?.name.orEmpty()) }
+        var unit by rememberSaveable { mutableStateOf(product?.unit.orEmpty()) }
         EditText(value = name, label = "Название"){ name = it }
         EditText(value = unit, label = "Единицы измерения"){ unit = it }
-        var type by rememberSaveable { mutableStateOf(types.first()) }
+        var type by rememberSaveable { mutableStateOf(product?.let { types.find { it.id == product.productTypeId } } ?: types.first()) }
         Spinner(stateList = types, initialState = type, nameMapper = {it.type} ) {
             type = it
         }
-        Button(onClick = { product.invoke(AddProductEvent(name, unit, type.id)) }) {
-            Text(text = "Добавить")
+        Button(onClick = { productListener.invoke(product?.let {
+            EditProductEvent(it.copy(name = name, unit = unit, productTypeId = type.id))
+        } ?: AddProductEvent(name, unit, type.id)) }) {
+            Text(text = product?.let { "Редактировать" } ?: "Добавить")
         }
     }
 }

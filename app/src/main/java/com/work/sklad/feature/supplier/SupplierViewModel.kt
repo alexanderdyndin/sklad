@@ -25,6 +25,7 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
     fun addSupplier(company: String, email: String, phone: String) {
         viewModelScope.launch {
             skladDao.addSupplier(company, email, phone)
+            closeBottom()
         }
     }
 
@@ -42,6 +43,7 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
         viewModelScope.launch {
             try {
                 skladDao.updateSupplier(supplier)
+                closeBottom()
             } catch (e: Throwable){
                 events.send(ShowMessage(e.localizedMessage.orEmpty()))
             }

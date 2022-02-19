@@ -12,6 +12,9 @@ interface SkladDao {
     @Query("select * from User where username = :username and password = :password")
     suspend fun searchUser(username: String, password: String):List<User>
 
+    @Query("select * from User where username = :username")
+    suspend fun searchUser(username: String):List<User>
+
     @Query("select * from User where id = :id")
     suspend fun searchUser(id: Int): List<User>
 
@@ -33,7 +36,7 @@ interface SkladDao {
     @Query("select * from product_type")
     suspend fun getProductTypes(): List<ProductType>
 
-    @Query("select product.id, product.name, product.unit, product.product_type_id as typeId, product_type.type, ((select sum(invoice_coming.count) from invoice_coming inner join warehouse on invoice_coming.warehouse_id = warehouse.id where warehouse.product_id = product.id) - (select sum(invoice.count) from invoice inner join warehouse on invoice.warehouse_id = warehouse.id where warehouse.product_id = product.id)) as count from product inner join product_type on product_type.id = product.product_type_id")
+    @Query("select product.id, product.name, product.unit, product.product_type_id as typeId, product_type.type, (select sum(invoice_coming.count) from invoice_coming inner join warehouse on invoice_coming.warehouse_id = warehouse.id where warehouse.product_id = product.id) as came, (select sum(invoice.count) from invoice inner join warehouse on invoice.warehouse_id = warehouse.id where warehouse.product_id = product.id) as `left` from product inner join product_type on product_type.id = product.product_type_id")
     fun getProductWithType(): Flow<List<ProductWithType>>
 
     @Query("select warehouse.id, warehouse.name, warehouse.free_place as place, (select sum(invoice_coming.count) from invoice_coming where invoice_coming.warehouse_id = warehouse.id) as [invoiceIn], (select sum(invoice.count) from invoice where invoice.warehouse_id = warehouse.id) as invoiceOut, product.id as productId, product.name as [product], product_type.type from product inner join product_type on product_type.id = product.product_type_id inner join warehouse on warehouse.product_id = product.id")
@@ -47,6 +50,9 @@ interface SkladDao {
 
     @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.price, invoice.count, invoice.manufactureDate, invoice.expirationDate from invoice inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id")
     fun getInvoice(): Flow<List<InvoiceWithWarehouse>>
+
+    @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.price, invoice.count, invoice.manufactureDate, invoice.expirationDate from invoice inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id where invoice.id = :id")
+    suspend fun getInvoice(id: Int): List<InvoiceWithWarehouse>
 
     @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.price, invoice.count, invoice.manufactureDate, invoice.expirationDate from invoice inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id LEFT OUTER JOIN `order` on `order`.invoice_id = invoice.id where `order`.invoice_id is NULL")
     suspend fun getFreeInvoices(): List<InvoiceWithWarehouse>

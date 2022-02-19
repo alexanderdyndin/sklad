@@ -29,6 +29,7 @@ class WarehouseFragment: BaseFragment() {
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
             is AddWarehouseEvent -> viewModel.add(it.name, it.freePlace, it.productId)
+            is EditWarehouseEvent -> viewModel.update(it.warehouse)
         }
     }
 
@@ -38,7 +39,7 @@ class WarehouseFragment: BaseFragment() {
             viewModel.action.collectLatest {
                 when (it) {
                     is OpenBottom -> {
-                        val bundle = bundleOf("products" to it.products.toTypedArray())
+                        val bundle = bundleOf("products" to it.products.toTypedArray(), "warehouse" to it.warehouse)
                         R.id.action_warehouseFragment_to_addWarehouseFragment.navigate(bundle)
                     }
                 }

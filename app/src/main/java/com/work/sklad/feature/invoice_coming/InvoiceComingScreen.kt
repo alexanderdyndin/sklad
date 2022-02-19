@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.work.sklad.data.model.InvoiceComing
 import com.work.sklad.data.model.Supplier
 import com.work.sklad.domain.model.InvoiceComingWithWarehouseSupplier
 import com.work.sklad.domain.model.WarehouseWithProduct
+import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.DatePicker
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
@@ -33,7 +35,7 @@ fun InvoicesScreen(viewModel: InvoiceComingViewModel) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.invoices) {
             InvoiceItem(order = it, onDelete = { viewModel.delete(it) }) {
-                viewModel.update(it)
+                viewModel.updateRequest(it)
             }
         }
     }
@@ -81,20 +83,20 @@ fun InvoiceItem(order: InvoiceComingWithWarehouseSupplier, onDelete: Listener, o
 }
 
 @Composable
-fun AddInvoiceComingScreen(warehouses: Array<WarehouseWithProduct>, suppliers: Array<Supplier>,
-                       listener: TypedListener<AddInvoiceComingEvent>) {
+fun AddInvoiceComingScreen(invoice: InvoiceComing?, warehouses: Array<WarehouseWithProduct>, suppliers: Array<Supplier>,
+                       listener: TypedListener<Event>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth()
     ) {
-        var count by rememberSaveable { mutableStateOf(0) }
-        var price by rememberSaveable { mutableStateOf(0.0) }
-        var date1 by remember { mutableStateOf(LocalDate.now()) }
-        var date2 by remember { mutableStateOf(LocalDate.now()) }
-        var warehouse by rememberSaveable { mutableStateOf(warehouses.first()) }
-        var supplier by rememberSaveable { mutableStateOf(suppliers.first()) }
+        var count by rememberSaveable { mutableStateOf(invoice?.count ?: 0) }
+        var price by rememberSaveable { mutableStateOf(invoice?.price ?: 0.0) }
+        var date1 by remember { mutableStateOf(invoice?.manufactureDate ?: LocalDate.now()) }
+        var date2 by remember { mutableStateOf(invoice?.expirationDate ?: LocalDate.now()) }
+        var warehouse by rememberSaveable { mutableStateOf(invoice?.warehouseId?.let { warehouses.find { warehouse -> warehouse.id == it } } ?: warehouses.first()) }
+        var supplier by rememberSaveable { mutableStateOf(invoice?.supplierId?.let { suppliers.find { supplier -> supplier.id == it } } ?: suppliers.first()) }
         EditText(value = count.toString(), label = "Количество", keyboardType = KeyboardType.Number){ count = it.toInt() }
         EditText(value = price.toString(), label = "Цена", keyboardType = KeyboardType.Number){ price = it.toDouble() }
         DatePicker(title = "Изготовлено", date = date1, onDateChange = {date1=it})
@@ -105,8 +107,10 @@ fun AddInvoiceComingScreen(warehouses: Array<WarehouseWithProduct>, suppliers: A
         Spinner(stateList = suppliers, initialState = supplier, nameMapper = {it.company} ) {
             supplier = it
         }
-        Button(onClick = { listener.invoke(AddInvoiceComingEvent(price,count,date1, date2, warehouse.id, supplier.id)) }) {
-            Text(text = "Добавить")
+        Button(onClick = { listener.invoke(invoice?.let{ EditInvoiceComingEvent(it.copy(price = price, count = count, manufactureDate = date1,
+            expirationDate = date2, warehouseId = warehouse.id, supplierId = supplier.id)) } ?:
+            AddInvoiceComingEvent(price,count,date1, date2, warehouse.id, supplier.id)) }) {
+            Text(text = invoice?.let { "Редактировать" } ?: "Добавить")
         }
     }
 }

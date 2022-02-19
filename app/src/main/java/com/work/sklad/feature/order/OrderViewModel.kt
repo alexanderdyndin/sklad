@@ -2,6 +2,7 @@ package com.work.sklad.feature.order
 
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.Client
+import com.work.sklad.data.model.Order
 import com.work.sklad.data.model.Supplier
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
@@ -11,6 +12,7 @@ import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
 import com.work.sklad.feature.main_activity.ShowMessage
+import com.work.sklad.feature.order.OrderAction.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -37,10 +39,27 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
         }
     }
 
-    fun update(productWithType: OrderWithInvoiceUserClient) {
+    fun updateRequest(order: OrderWithInvoiceUserClient) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val clients = skladDao.getClientList()
+            val invoice = skladDao.getInvoice(order.invoiceId).first()
+            val invoices = skladDao.getFreeInvoices().plus(invoice)
+            when {
+                clients.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одного клиента"))
+                invoices.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одну накладную расхода не использованную в заказе"))
+                else -> action(OpenBottom(clients, invoices, order.toOrder()))
+            }
+        }
+    }
+
+    fun update(order: OrderWithInvoiceUserClient) {
+        update(order.toOrder())
+    }
+
+    fun update(order: Order) {
         viewModelScope.launch {
             try{
-                skladDao.update(productWithType.toOrder())
+                skladDao.update(order)
             } catch(e: Throwable) {
 
             }
@@ -57,14 +76,14 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
         }
     }
 
-    fun openBottom() {
+    fun openBottom(order: Order? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val clients = skladDao.getClientList()
             val invoices = skladDao.getFreeInvoices()
             when {
                 clients.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одного клиента"))
                 invoices.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одну накладную расхода не использованную в заказе"))
-                else -> action(OrderAction.OpenBottom(clients, invoices))
+                else -> action(OpenBottom(clients, invoices, order))
             }
         }
     }
@@ -84,5 +103,5 @@ class OrderMutator: BaseMutator<OrderState>() {
 }
 
 sealed class OrderAction {
-    data class OpenBottom(val clients: List<Client>, val invoices: List<InvoiceWithWarehouse>) : OrderAction()
+    data class OpenBottom(val clients: List<Client>, val invoices: List<InvoiceWithWarehouse>, val order: Order? = null) : OrderAction()
 }

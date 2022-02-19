@@ -29,13 +29,23 @@ class WarehouseViewModel @Inject constructor(): BaseViewModel<WarehouseState, Wa
     fun add(name: String, freePlace: Int, productId: Int) {
         viewModelScope.launch {
             skladDao.addWarehouse(name, freePlace, productId)
+            closeBottom()
         }
     }
 
-    fun update(warehouse: WarehouseWithProduct) {
+    fun updateRequest(warehouse: WarehouseWithProduct) {
+        viewModelScope.launch {
+            skladDao.getProductList().also {
+                action(OpenBottom(it, warehouse.toWarehouse()))
+            }
+        }
+    }
+
+    fun update(warehouse: Warehouse) {
         viewModelScope.launch {
             try{
-                skladDao.update(warehouse.toWarehouse())
+                skladDao.update(warehouse)
+                closeBottom()
             } catch(e: Throwable) {
 
             }
@@ -79,5 +89,5 @@ class WarehouseMutator: BaseMutator<WarehouseState>() {
 }
 
 sealed class WarehouseAction {
-    data class OpenBottom(val products: List<Product>) : WarehouseAction()
+    data class OpenBottom(val products: List<Product>, val warehouse: Warehouse? = null) : WarehouseAction()
 }

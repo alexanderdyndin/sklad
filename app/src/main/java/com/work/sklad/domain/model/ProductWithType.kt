@@ -10,7 +10,8 @@ data class ProductWithType(
     val unit: String,
     val typeId: Int,
     val type: String,
-    val count: Int
+    val came: Long,
+    val left: Long,
 ): Serializable {
     fun toProduct() = Product(id, name, unit, typeId)
 }

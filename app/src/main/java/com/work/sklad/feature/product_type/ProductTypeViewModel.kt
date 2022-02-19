@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
+import com.work.sklad.feature.product_type.ProductTypeAction.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -23,13 +24,19 @@ class ProductTypeViewModel @Inject constructor(): BaseViewModel<ProductTypeState
     fun add(type: String) {
         viewModelScope.launch {
             skladDao.addTypes(type)
+            closeBottom()
         }
+    }
+
+    fun updateRequest(productType: ProductType) {
+        openBottom(productType)
     }
 
     fun update(productType: ProductType) {
         viewModelScope.launch {
             try{
                 skladDao.update(productType)
+                closeBottom()
             } catch(e: Throwable) {
 
             }
@@ -46,8 +53,8 @@ class ProductTypeViewModel @Inject constructor(): BaseViewModel<ProductTypeState
         }
     }
 
-    fun openBottom() {
-        action(ProductTypeAction.OpenBottom)
+    fun openBottom(productType: ProductType? = null) {
+        action(OpenBottom(productType))
     }
 }
 
@@ -64,5 +71,5 @@ class ProductTypeMutator: BaseMutator<ProductTypeState>() {
 }
 
 sealed class ProductTypeAction {
-    object OpenBottom : ProductTypeAction()
+    data class OpenBottom(val productType: ProductType? = null) : ProductTypeAction()
 }

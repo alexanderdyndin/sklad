@@ -1,6 +1,7 @@
 package com.work.sklad.feature.product
 
 import androidx.lifecycle.viewModelScope
+import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.domain.model.WarehouseWithProduct
@@ -27,13 +28,19 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
     fun add(name: String, unit: String, typeId: Int) {
         viewModelScope.launch {
             skladDao.addProduct(name, unit, typeId)
+            closeBottom()
         }
     }
 
-    fun update(productWithType: ProductWithType) {
+    fun updateRequest(productWithType: ProductWithType) {
+        openBottom(productWithType.toProduct())
+    }
+
+    fun update(product: Product) {
         viewModelScope.launch {
             try{
-                skladDao.update(productWithType.toProduct())
+                skladDao.update(product)
+                closeBottom()
             } catch(e: Throwable) {
 
             }
@@ -50,13 +57,13 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
         }
     }
 
-    fun openBottom() {
+    fun openBottom(product: Product? = null) {
         viewModelScope.launch {
             skladDao.getProductTypes().also {
                 if (it.isEmpty()) {
                     events.send(ShowMessage("Необходимо добавить хотя бы один тип продукта"))
                 } else {
-                    action(OpenBottom(it))
+                    action(OpenBottom(it, product))
                 }
             }
         }
@@ -77,5 +84,5 @@ class ProductMutator: BaseMutator<ProductState>() {
 }
 
 sealed class ProductAction {
-    data class OpenBottom(val types: List<ProductType>) : ProductAction()
+    data class OpenBottom(val types: List<ProductType>, val product: Product? = null) : ProductAction()
 }

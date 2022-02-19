@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -22,6 +23,7 @@ import com.work.sklad.feature.common.Events
 import com.work.sklad.feature.common.base.BaseFragment
 import com.work.sklad.feature.common.compose.ComposeScreen
 import com.work.sklad.feature.common.compose.composeView
+import com.work.sklad.feature.product_type.ProductTypeAction.OpenBottom
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -39,6 +41,7 @@ class ProductTypeFragment: BaseFragment() {
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
             is AddProductTypeEvent -> viewModel.add(it.type)
+            is EditProductTypeEvent -> viewModel.update(it.type)
         }
     }
 
@@ -47,7 +50,11 @@ class ProductTypeFragment: BaseFragment() {
         lifecycleScope.launchWhenCreated {
             viewModel.action.collectLatest {
                 when (it) {
-                    ProductTypeAction.OpenBottom -> R.id.action_productTypeFragment_to_addProductTypeFragment.navigate()
+                    is OpenBottom -> {
+                        R.id.action_productTypeFragment_to_addProductTypeFragment.navigate(it.productType?.let { type ->
+                            bundleOf("type" to type)
+                        })
+                    }
                 }
             }
         }

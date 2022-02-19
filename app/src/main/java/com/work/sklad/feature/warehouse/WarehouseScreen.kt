@@ -15,7 +15,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.work.sklad.data.model.Product
+import com.work.sklad.data.model.Warehouse
 import com.work.sklad.domain.model.WarehouseWithProduct
+import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.compose.views.Spinner
@@ -29,7 +31,7 @@ fun WarehousesScreen(viewModel: WarehouseViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.warehouses) {
-            WarehouseItem(warehouse = it, onDelete = { viewModel.delete(it) }) {viewModel.update(it)}
+            WarehouseItem(warehouse = it, onDelete = { viewModel.delete(it) }) {viewModel.updateRequest(it)}
         }
     }
 }
@@ -72,23 +74,23 @@ fun WarehouseItem(warehouse: WarehouseWithProduct, onDelete: Listener, onUpdate:
 }
 
 @Composable
-fun AddWarehouseScreen(products: Array<Product>, Warehouse: TypedListener<AddWarehouseEvent>) {
+fun AddWarehouseScreen(warehouse: Warehouse?, products: Array<Product>, Warehouse: TypedListener<Event>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth()
     ) {
-        var name by rememberSaveable { mutableStateOf("") }
-        var place by rememberSaveable { mutableStateOf(0) }
+        var name by rememberSaveable { mutableStateOf(warehouse?.name.orEmpty()) }
+        var place by rememberSaveable { mutableStateOf(warehouse?.freePlace ?: 0) }
         EditText(value = name, label = "Название"){ name = it }
         EditText(value = place.toString(), label = "Вместимость", keyboardType = KeyboardType.Number){ place = it.toInt() }
-        var type by rememberSaveable { mutableStateOf(products.first()) }
+        var type by rememberSaveable { mutableStateOf(warehouse?.productId?.let { id -> products.find { it.id == id } } ?: products.first()) }
         Spinner(stateList = products, initialState = type, nameMapper = {it.name} ) {
             type = it
         }
-        Button(onClick = { Warehouse.invoke(AddWarehouseEvent(name, place, type.id)) }) {
-            Text(text = "Добавить")
+        Button(onClick = { Warehouse.invoke(warehouse?.let { EditWarehouseEvent(it.copy(name = name, freePlace = place, productId = type.id)) } ?: AddWarehouseEvent(name, place, type.id)) }) {
+            Text(text = warehouse?.let { "Редактировать" } ?: "Добавить")
         }
     }
 }

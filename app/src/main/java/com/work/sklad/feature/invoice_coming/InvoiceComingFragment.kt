@@ -27,6 +27,7 @@ class InvoiceComingFragment: BaseFragment() {
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
             is AddInvoiceComingEvent -> viewModel.addInvoice(it.price, it.count, it.manufactureDate, it.expirationDate, it.warehouseId, it.supplierId)
+            is EditInvoiceComingEvent -> viewModel.update(it.invoiceComing)
         }
     }
 
@@ -39,7 +40,11 @@ class InvoiceComingFragment: BaseFragment() {
                         val bundle = bundleOf(
                             "warehouses" to it.warehouses.toTypedArray(),
                             "suppliers" to it.suppliers.toTypedArray()
-                        )
+                        ).apply {
+                            it.invoiceComing?.let { invoiceComing ->
+                                putSerializable("invoice", invoiceComing)
+                            }
+                        }
                         R.id.action_invoiceComingFragment_to_invoiceComingAddFragment.navigate(bundle)
                     }
                 }

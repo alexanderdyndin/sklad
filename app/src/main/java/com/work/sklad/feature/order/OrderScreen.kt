@@ -15,8 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.work.sklad.data.model.Client
+import com.work.sklad.data.model.Order
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
+import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.DatePicker
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.Spinner
@@ -31,7 +33,7 @@ fun OrdersScreen(viewModel: OrderViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.orders) {
-            WarehouseItem(it, {viewModel.delete(it)}, {viewModel.update(it)}) { checked -> viewModel.update(it.copy(isCompleted = checked)) }
+            WarehouseItem(it, {viewModel.delete(it)}, {viewModel.updateRequest(it)}) { checked -> viewModel.update(it.copy(isCompleted = checked)) }
         }
     }
 }
@@ -85,18 +87,18 @@ fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdat
 }
 
 @Composable
-fun AddOrderScreen(clients: Array<Client>, invoices: Array<InvoiceWithWarehouse>,
-                       listener: TypedListener<AddOrderEvent>) {
+fun AddOrderScreen(order: Order?, clients: Array<Client>, invoices: Array<InvoiceWithWarehouse>,
+                       listener: TypedListener<Event>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth()
     ) {
-        var date1 by remember { mutableStateOf(LocalDate.now()) }
-        var client by rememberSaveable { mutableStateOf(clients.first()) }
-        var invoice by rememberSaveable { mutableStateOf(invoices.first()) }
-        var completed by rememberSaveable { mutableStateOf(false) }
+        var date1 by remember { mutableStateOf(order?.date ?: LocalDate.now()) }
+        var client by rememberSaveable { mutableStateOf(order?.clientId?.let { clients.find { client -> client.id == it } } ?: clients.first()) }
+        var invoice by rememberSaveable { mutableStateOf(order?.invoiceId?.let { invoices.find { invoice -> invoice.id == it } } ?: invoices.first()) }
+        var completed by rememberSaveable { mutableStateOf(order?.isCompleted ?: false) }
         DatePicker(title = "Дата заказа", date = date1, onDateChange = {date1=it})
         Spinner(stateList = clients, initialState = client, nameMapper = {it.company} ) {
             client = it
@@ -109,8 +111,10 @@ fun AddOrderScreen(clients: Array<Client>, invoices: Array<InvoiceWithWarehouse>
             Text(text = "Выполнен", modifier = Modifier.padding(end = 8.dp))
         }
 
-        Button(onClick = { listener.invoke(AddOrderEvent(date1, client.id, invoice.id, completed)) }) {
-            Text(text = "Добавить")
+        Button(onClick = { listener.invoke(order?.let {
+            EditOrderEvent(it.copy(date = date1, clientId = client.id, invoiceId = invoice.id, isCompleted = completed))
+        } ?: AddOrderEvent(date1, client.id, invoice.id, completed)) }) {
+            Text(text = order?.let { "Редактировать" } ?: "Добавить")
         }
     }
 }

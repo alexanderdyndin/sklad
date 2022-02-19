@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.ProductType
+import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.utils.Listener
@@ -25,7 +26,7 @@ fun ProductTypesScreen(viewModel: ProductTypeViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.productTypes) {
-            TypeItem(it, {}) {}
+            TypeItem(it, {viewModel.delete(it)}) { viewModel.updateRequest(it) }
         }
     }
 }
@@ -42,17 +43,17 @@ fun TypeItem(type: ProductType, onDelete: Listener, onUpdate: Listener) {
 }
 
 @Composable
-fun AddProductTypeScreen(ProductType: TypedListener<AddProductTypeEvent>) {
+fun AddProductTypeScreen(productType: ProductType?, ProductType: TypedListener<Event>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth()
     ) {
-        var type by rememberSaveable { mutableStateOf("") }
+        var type by rememberSaveable { mutableStateOf(productType?.type.orEmpty()) }
         EditText(value = type, label = "Название"){ type = it }
-        Button(onClick = { ProductType.invoke(AddProductTypeEvent(type)) }) {
-            Text(text = "Добавить")
+        Button(onClick = { ProductType.invoke(productType?.let { EditProductTypeEvent(it.copy(type = type)) } ?: AddProductTypeEvent(type)) }) {
+            Text(text = productType?.let {"Редактировать" } ?: "Добавить")
         }
     }
 }

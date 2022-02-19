@@ -39,7 +39,11 @@ class OrderFragment: BaseFragment() {
                         val bundle = bundleOf(
                             "clients" to it.clients.toTypedArray(),
                             "invoices" to it.invoices.toTypedArray()
-                        )
+                        ).apply {
+                            it.order?.let { order ->
+                                putSerializable("order", order)
+                            }
+                        }
                         R.id.action_orderFragment_to_orderAddFragment.navigate(bundle)
                     }
                 }

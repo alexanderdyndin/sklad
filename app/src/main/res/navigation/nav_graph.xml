@@ -88,7 +88,12 @@
     <dialog
         android:id="@+id/addProductTypeFragment"
         android:name="com.work.sklad.feature.product_type.AddProductTypeFragment"
-        android:label="AddProductTypeFragment" />
+        android:label="AddProductTypeFragment" >
+        <argument
+            android:name="type"
+            app:argType="com.work.sklad.data.model.ProductType"
+            app:nullable="true" />
+    </dialog>
     <dialog
         android:id="@+id/addProductFragment"
         android:name="com.work.sklad.feature.product.AddProductFragment"
@@ -112,6 +117,10 @@
         <argument
             android:name="products"
             app:argType="com.work.sklad.data.model.Product[]" />
+        <argument
+            android:name="warehouse"
+            app:argType="com.work.sklad.data.model.Warehouse"
+            app:nullable="true" />
     </dialog>
     <fragment
         android:id="@+id/warehouseFragment"
@@ -139,6 +148,10 @@
         <argument
             android:name="suppliers"
             app:argType="com.work.sklad.data.model.Supplier[]" />
+        <argument
+            android:name="invoice"
+            app:argType="com.work.sklad.data.model.InvoiceComing"
+            app:nullable="true" />
     </dialog>
     <fragment
         android:id="@+id/invoiceFragment"
@@ -174,5 +187,9 @@
         <argument
             android:name="clients"
             app:argType="com.work.sklad.data.model.Client[]" />
+        <argument
+            android:name="order"
+            app:argType="com.work.sklad.data.model.Order"
+            app:nullable="true" />
     </dialog>
 </navigation>

@@ -29,6 +29,7 @@ class ProductFragment: BaseFragment() {
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
             is AddProductEvent -> viewModel.add(it.name, it.unit, it.typeId)
+            is EditProductEvent -> viewModel.update(it.product)
         }
     }
 
@@ -39,6 +40,9 @@ class ProductFragment: BaseFragment() {
                 when (it) {
                     is OpenBottom -> {
                         val bundle = bundleOf("types" to it.types.toTypedArray())
+                        it.product?.let { product ->
+                            bundle.putSerializable("product", product)
+                        }
                         R.id.action_productFragment_to_addProductFragment.navigate(bundle)
                     }
                 }
