@@ -1,15 +1,11 @@
-package com.work.sklad.feature.common.base.views
+package com.work.sklad.feature.common.compose.views
 
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.TextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 
 @Composable
 fun EditText(

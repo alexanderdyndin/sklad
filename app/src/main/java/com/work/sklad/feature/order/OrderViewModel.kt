@@ -5,6 +5,7 @@ import com.work.sklad.data.model.Client
 import com.work.sklad.data.model.Supplier
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
+import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
@@ -33,6 +34,26 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
     fun addInvoice(date: LocalDate, clientId: Int, invoiceId: Int, isCompleted: Boolean) {
         viewModelScope.launch {
             skladDao.addOrder(date, clientId, sharedPreferences.get(UserId, -1), invoiceId, isCompleted)
+        }
+    }
+
+    fun update(productWithType: OrderWithInvoiceUserClient) {
+        viewModelScope.launch {
+            try{
+                skladDao.update(productWithType.toOrder())
+            } catch(e: Throwable) {
+
+            }
+        }
+    }
+
+    fun delete(productWithType: OrderWithInvoiceUserClient) {
+        viewModelScope.launch {
+            try{
+                skladDao.delete(productWithType.toOrder())
+            } catch(e: Throwable) {
+
+            }
         }
     }
 

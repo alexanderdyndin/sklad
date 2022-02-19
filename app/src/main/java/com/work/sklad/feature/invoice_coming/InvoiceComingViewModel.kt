@@ -34,6 +34,26 @@ class InvoiceComingViewModel @Inject constructor(): BaseViewModel<InvoiceComingS
         }
     }
 
+    fun update(invoice: InvoiceComingWithWarehouseSupplier) {
+        viewModelScope.launch {
+            try{
+                skladDao.update(invoice.toInvoiceComing())
+            } catch(e: Throwable) {
+
+            }
+        }
+    }
+
+    fun delete(invoice: InvoiceComingWithWarehouseSupplier) {
+        viewModelScope.launch {
+            try{
+                skladDao.delete(invoice.toInvoiceComing())
+            } catch(e: Throwable) {
+
+            }
+        }
+    }
+
     fun openBottom() {
         viewModelScope.launch(Dispatchers.IO) {
             val warehouses = skladDao.getWarehouseWithProductList()

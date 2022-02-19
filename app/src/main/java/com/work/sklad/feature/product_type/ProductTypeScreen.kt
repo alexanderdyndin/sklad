@@ -12,16 +12,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.work.sklad.data.model.Client
 import com.work.sklad.data.model.ProductType
-import com.work.sklad.data.model.UserType
-import com.work.sklad.feature.common.Event
-import com.work.sklad.feature.common.base.views.DropDownChangeDelete
-import com.work.sklad.feature.common.base.views.EditText
-import com.work.sklad.feature.common.base.views.Spinner
+import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
+import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
-import com.work.sklad.feature.login.RegistrationEvent
 
 @Composable
 fun ProductTypesScreen(viewModel: ProductTypeViewModel) {

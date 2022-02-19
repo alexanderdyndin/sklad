@@ -2,6 +2,7 @@ package com.work.sklad.feature.warehouse
 
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.Product
+import com.work.sklad.data.model.ProductType
 import com.work.sklad.data.model.Warehouse
 import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.domain.model.WarehouseWithProduct
@@ -25,9 +26,29 @@ class WarehouseViewModel @Inject constructor(): BaseViewModel<WarehouseState, Wa
         }
     }
 
-    fun registration(name: String, freePlace: Int, productId: Int) {
+    fun add(name: String, freePlace: Int, productId: Int) {
         viewModelScope.launch {
             skladDao.addWarehouse(name, freePlace, productId)
+        }
+    }
+
+    fun update(warehouse: WarehouseWithProduct) {
+        viewModelScope.launch {
+            try{
+                skladDao.update(warehouse.toWarehouse())
+            } catch(e: Throwable) {
+
+            }
+        }
+    }
+
+    fun delete(warehouse: WarehouseWithProduct) {
+        viewModelScope.launch {
+            try{
+                skladDao.delete(warehouse.toWarehouse())
+            } catch(e: Throwable) {
+
+            }
         }
     }
 

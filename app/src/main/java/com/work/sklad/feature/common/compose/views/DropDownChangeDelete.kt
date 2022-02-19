@@ -1,4 +1,4 @@
-package com.work.sklad.feature.common.base.views
+package com.work.sklad.feature.common.compose.views
 
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -11,7 +11,13 @@ fun DropDownChangeDelete(expanded: Boolean, onDelete: () -> Unit, onEdit: () -> 
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
-        DropdownMenuItem(text = { Text("Редактировать") }, onClick = onEdit)
-        DropdownMenuItem(text = { Text("Удалить") }, onClick = onDelete)
+        DropdownMenuItem(text = { Text("Редактировать") }, onClick = {
+            onEdit.invoke()
+            onDismiss.invoke()
+        })
+        DropdownMenuItem(text = { Text("Удалить") }, onClick = {
+            onDelete.invoke()
+            onDismiss.invoke()
+        })
     }
 }

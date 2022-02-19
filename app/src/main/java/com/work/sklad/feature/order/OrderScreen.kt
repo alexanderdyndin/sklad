@@ -12,18 +12,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.work.sklad.data.model.Client
-import com.work.sklad.data.model.Supplier
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
-import com.work.sklad.domain.model.WarehouseWithProduct
-import com.work.sklad.feature.common.base.views.DatePicker
-import com.work.sklad.feature.common.base.views.DropDownChangeDelete
-import com.work.sklad.feature.common.base.views.EditText
-import com.work.sklad.feature.common.base.views.Spinner
+import com.work.sklad.feature.common.compose.views.DatePicker
+import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
+import com.work.sklad.feature.common.compose.views.Spinner
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
 import java.time.LocalDate
@@ -35,7 +31,7 @@ fun OrdersScreen(viewModel: OrderViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.orders) {
-            WarehouseItem(it, {}, {}) {}
+            WarehouseItem(it, {viewModel.delete(it)}, {viewModel.update(it)}) { checked -> viewModel.update(it.copy(isCompleted = checked)) }
         }
     }
 }

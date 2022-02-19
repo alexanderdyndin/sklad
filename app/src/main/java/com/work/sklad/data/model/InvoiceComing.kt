@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import java.io.Serializable
 import java.time.LocalDate
 
 @Entity(
@@ -30,4 +31,4 @@ data class InvoiceComing(
     val warehouseId: Int,
     @ColumnInfo(name = "supplier_id")
     val supplierId: Int,
-)
+) : Serializable

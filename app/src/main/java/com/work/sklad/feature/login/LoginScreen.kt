@@ -2,6 +2,7 @@ package com.work.sklad.feature.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Checkbox
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.TextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -11,8 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.UserType
-import com.work.sklad.feature.common.base.views.EditText
-import com.work.sklad.feature.common.base.views.Spinner
+import com.work.sklad.feature.common.compose.views.EditText
+import com.work.sklad.feature.common.compose.views.Spinner
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.Typed3Listener
 import com.work.sklad.feature.common.utils.TypedListener
@@ -22,15 +23,21 @@ fun LoginScreen(viewModel: LoginViewModel) {
     val state by viewModel.state.collectAsState()
     viewModel.init()
 
-    AuthContent(state,
-        onLoginClick = {login, password, checked -> viewModel.authorize(login, password, checked)},
-        registration = { viewModel.registration() },
-        rememberUser = { viewModel.mutateState { setRememberState(it) } }
-    )
+    if (state.isLoading) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        }
+    } else {
+        AuthContent(
+            onLoginClick = {login, password, checked -> viewModel.authorize(login, password, checked)},
+            registration = { viewModel.registration() },
+            rememberUser = { viewModel.mutateState { setRememberState(it) } }
+        )
+    }
 }
 
 @Composable
-fun AuthContent(state: LoginState, onLoginClick: Typed3Listener<String, String, Boolean>, registration: Listener, rememberUser: TypedListener<Boolean>) {
+fun AuthContent(onLoginClick: Typed3Listener<String, String, Boolean>, registration: Listener, rememberUser: TypedListener<Boolean>) {
     var login by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var checked by rememberSaveable { mutableStateOf(true) }

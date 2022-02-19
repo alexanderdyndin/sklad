@@ -1,6 +1,7 @@
 package com.work.sklad.feature.invoice
 
 import androidx.lifecycle.viewModelScope
+import com.work.sklad.domain.model.InvoiceComingWithWarehouseSupplier
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.base.BaseMutator
@@ -29,6 +30,26 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
                    expirationDate: LocalDate, warehouseId: Int) {
         viewModelScope.launch {
             skladDao.addInvoice(price, count, manufactureDate, expirationDate, warehouseId)
+        }
+    }
+
+    fun update(invoice: InvoiceWithWarehouse) {
+        viewModelScope.launch {
+            try{
+                skladDao.update(invoice.toInvoice())
+            } catch(e: Throwable) {
+
+            }
+        }
+    }
+
+    fun delete(invoice: InvoiceWithWarehouse) {
+        viewModelScope.launch {
+            try{
+                skladDao.delete(invoice.toInvoice())
+            } catch(e: Throwable) {
+
+            }
         }
     }
 

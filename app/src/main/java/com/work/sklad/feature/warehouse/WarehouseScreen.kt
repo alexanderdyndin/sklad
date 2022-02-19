@@ -15,17 +15,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.work.sklad.data.model.Product
-import com.work.sklad.data.model.ProductType
-import com.work.sklad.data.model.UserType
-import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.domain.model.WarehouseWithProduct
-import com.work.sklad.feature.common.Event
-import com.work.sklad.feature.common.base.views.DropDownChangeDelete
-import com.work.sklad.feature.common.base.views.EditText
-import com.work.sklad.feature.common.base.views.Spinner
+import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
+import com.work.sklad.feature.common.compose.views.EditText
+import com.work.sklad.feature.common.compose.views.Spinner
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
-import com.work.sklad.feature.login.RegistrationEvent
 
 @Composable
 fun WarehousesScreen(viewModel: WarehouseViewModel) {
@@ -34,9 +29,7 @@ fun WarehousesScreen(viewModel: WarehouseViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.warehouses) {
-            WarehouseItem(warehouse = it, onDelete = {  }) {
-
-            }
+            WarehouseItem(warehouse = it, onDelete = { viewModel.delete(it) }) {viewModel.update(it)}
         }
     }
 }
@@ -61,14 +54,14 @@ fun WarehouseItem(warehouse: WarehouseWithProduct, onDelete: Listener, onUpdate:
             Spacer(modifier = Modifier.padding(2.dp))
             Text(text = "Вместимость: ${warehouse.place}")
             Spacer(modifier = Modifier.padding(2.dp))
-            Text(text = "Занято места: ${warehouse.busyPlace}")
+            Text(text = "Занято места: ${warehouse.invoiceIn?.let { it - (warehouse.invoiceOut ?: 0) } ?: 0}")
             Spacer(modifier = Modifier.padding(2.dp))
             Text(text = "Товар : ${warehouse.product}")
             DropDownChangeDelete(expanded = expanded, onDelete = onDelete, onEdit = onUpdate) {
                 expanded = false
             }
         }
-        Text(text = "Свободное место: ${warehouse.freePlace}", style = MaterialTheme.typography.titleLarge,
+        Text(text = "Свободное место: ${warehouse.place - (warehouse.invoiceIn?:0) + (warehouse.invoiceOut ?: 0) }", style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.constrainAs(count) {
                 top.linkTo(parent.top)
                 end.linkTo(parent.end)

@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.Supplier
-import com.work.sklad.feature.common.base.views.DropDownChangeDelete
-import com.work.sklad.feature.common.base.views.EditText
+import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
+import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
 

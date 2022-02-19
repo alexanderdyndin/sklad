@@ -26,6 +26,26 @@ class ProductTypeViewModel @Inject constructor(): BaseViewModel<ProductTypeState
         }
     }
 
+    fun update(productType: ProductType) {
+        viewModelScope.launch {
+            try{
+                skladDao.update(productType)
+            } catch(e: Throwable) {
+
+            }
+        }
+    }
+
+    fun delete(productType: ProductType) {
+        viewModelScope.launch {
+            try{
+                skladDao.delete(productType)
+            } catch(e: Throwable) {
+
+            }
+        }
+    }
+
     fun openBottom() {
         action(ProductTypeAction.OpenBottom)
     }

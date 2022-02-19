@@ -42,7 +42,10 @@ class LoginFragment: BaseFragment() {
             viewModel.action.collectLatest {
                 when (it) {
                     LoginAction.OpenBottomSheet -> findNavController().navigate(R.id.action_loginFragment_to_registrationFragment)
-                    LoginAction.Proceed -> findNavController().navigate(R.id.action_global_menuFragment)
+                    LoginAction.Proceed -> {
+                        findNavController().navigate(R.id.action_global_menuFragment)
+                        viewModel.mutateState { setLoading(false) }
+                    }
                 }
             }
         }

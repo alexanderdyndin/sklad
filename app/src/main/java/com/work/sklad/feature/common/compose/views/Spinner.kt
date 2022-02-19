@@ -1,4 +1,4 @@
-package com.work.sklad.feature.common.base.views
+package com.work.sklad.feature.common.compose.views
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

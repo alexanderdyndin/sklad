@@ -28,7 +28,10 @@ abstract class BaseBottomSheet: BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launchWhenCreated {
-            events.getFlow().collectLatest { eventsAction?.invoke(it) }
+            events.getFlow().collectLatest {
+                eventsAction?.invoke(it)
+                if (it is CloseBottom) dismiss()
+            }
         }
     }
 
@@ -40,6 +43,6 @@ abstract class BaseBottomSheet: BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ) = composeBottomView(requireContext()){ composable?.invoke() }
 
-
-
 }
+
+object CloseBottom : Event

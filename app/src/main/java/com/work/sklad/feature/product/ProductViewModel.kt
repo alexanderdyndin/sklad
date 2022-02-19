@@ -3,6 +3,7 @@ package com.work.sklad.feature.product
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.domain.model.ProductWithType
+import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
 import com.work.sklad.feature.main_activity.ShowMessage
@@ -23,9 +24,29 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
         }
     }
 
-    fun registration(name: String, unit: String, typeId: Int) {
+    fun add(name: String, unit: String, typeId: Int) {
         viewModelScope.launch {
             skladDao.addProduct(name, unit, typeId)
+        }
+    }
+
+    fun update(productWithType: ProductWithType) {
+        viewModelScope.launch {
+            try{
+                skladDao.update(productWithType.toProduct())
+            } catch(e: Throwable) {
+
+            }
+        }
+    }
+
+    fun delete(productWithType: ProductWithType) {
+        viewModelScope.launch {
+            try{
+                skladDao.delete(productWithType.toProduct())
+            } catch(e: Throwable) {
+
+            }
         }
     }
 

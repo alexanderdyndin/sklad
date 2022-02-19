@@ -14,7 +14,6 @@ data class Product(
     val id: Int,
     val name: String,
     val unit: String,
-    val price: Double,
     @ColumnInfo(name = "product_type_id")
     val productTypeId: Int
 ): Serializable

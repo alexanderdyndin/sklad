@@ -8,6 +8,7 @@ import com.work.sklad.data.dao.SkladDao
 import com.work.sklad.domain.repository.ISharedPreferencesRepository
 import com.work.sklad.feature.common.Events
 import com.work.sklad.feature.common.Screens
+import com.work.sklad.feature.main_activity.ShowMessage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,5 +55,13 @@ abstract class BaseViewModel<TState, TMutator : BaseMutator<TState>, TAction>(
 
     override fun mutateState(mutate: TMutator.() -> Unit) {
         _state.value = getMutator(_state.value).apply(mutate).state
+    }
+
+    protected fun message(msg: String) {
+        events.send(ShowMessage(msg))
+    }
+
+    protected fun closeBottom() {
+        events.send(CloseBottom)
     }
 }

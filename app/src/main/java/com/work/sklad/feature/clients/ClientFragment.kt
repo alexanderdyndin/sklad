@@ -13,10 +13,12 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.work.sklad.R
+import com.work.sklad.feature.clients.ClientAction.*
 import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.Events
 import com.work.sklad.feature.common.base.BaseFragment
@@ -39,6 +41,7 @@ class ClientFragment: BaseFragment() {
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
             is AddClientEvent -> viewModel.registration(it.company, it.email, it.phone)
+            is EditClientEvent -> viewModel.update(it.client)
         }
     }
 
@@ -47,7 +50,11 @@ class ClientFragment: BaseFragment() {
         lifecycleScope.launchWhenCreated {
             viewModel.action.collectLatest {
                 when (it) {
-                    ClientAction.OpenBottom -> R.id.action_clientFragment_to_addClientFragment.navigate()
+                    is OpenBottom -> {
+                        R.id.action_clientFragment_to_addClientFragment.navigate(it.client?.let { client ->
+                            bundleOf("client" to client)
+                        })
+                    }
                 }
             }
         }

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import java.io.Serializable
 import java.time.LocalDate
 
 @Entity(foreignKeys = [
@@ -22,4 +23,4 @@ data class Order(
     @ColumnInfo(name = "invoice_id")
     val invoiceId: Int,
     val isCompleted: Boolean
-)
+) : Serializable

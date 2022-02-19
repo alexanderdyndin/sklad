@@ -21,16 +21,18 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
         val id = sharedPreferences.get(UserId, -1)
         if (id != -1) {
             viewModelScope.launch {
-                skladDao.searchUser(id).collectLatest {
+                skladDao.searchUser(id).also {
                     action(Proceed)
                 }
             }
+        } else {
+            mutateState { setLoading(false) }
         }
     }
 
     fun authorize(login: String, password: String, rememberUser: Boolean = state.value.rememberUser) {
         viewModelScope.launch(Dispatchers.IO) {
-            skladDao.searchUser(login, password).collectLatest {
+            skladDao.searchUser(login, password).also {
                 if (it.isNotEmpty()) {
                     val user = it.first()
                     if (rememberUser) {
@@ -53,6 +55,7 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 skladDao.addUser(login, password, userType, name, surname, patronymic, phone)
+                closeBottom()
             } catch (exception: Throwable) {
 
             }
@@ -62,12 +65,16 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
 }
 
 data class LoginState(
-    val rememberUser: Boolean = true
+    val rememberUser: Boolean = true,
+    val isLoading: Boolean = true,
 )
 
 class LoginMutator : BaseMutator<LoginState>() {
     fun setRememberState(remember: Boolean) {
         state = state.copy(rememberUser = remember)
+    }
+    fun setLoading(loading: Boolean) {
+        state = state.copy(isLoading = loading)
     }
 }
 
@@ -75,5 +82,3 @@ sealed class LoginAction {
     object OpenBottomSheet : LoginAction()
     object Proceed : LoginAction()
 }
-
-typealias RegisterAction = (login: String, password: String, userType: UserType, name: String, surname: String, patronymic: String?, phone: String) -> Unit

@@ -59,7 +59,12 @@
     <dialog
         android:id="@+id/addClientFragment"
         android:name="com.work.sklad.feature.clients.AddClientFragment"
-        android:label="AddClientFragment" />
+        android:label="AddClientFragment" >
+        <argument
+            android:name="client"
+            app:argType="com.work.sklad.data.model.Client"
+            app:nullable="true" />
+    </dialog>
     <fragment
         android:id="@+id/supplierFragment2"
         android:name="com.work.sklad.feature.supplier.SupplierFragment"

@@ -1,24 +1,27 @@
 package com.work.sklad.feature.invoice_coming
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.work.sklad.data.model.Supplier
+import com.work.sklad.domain.model.InvoiceComingWithWarehouseSupplier
 import com.work.sklad.domain.model.WarehouseWithProduct
-import com.work.sklad.feature.common.base.views.DatePicker
-import com.work.sklad.feature.common.base.views.EditText
-import com.work.sklad.feature.common.base.views.Spinner
+import com.work.sklad.feature.common.compose.views.DatePicker
+import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
+import com.work.sklad.feature.common.compose.views.EditText
+import com.work.sklad.feature.common.compose.views.Spinner
+import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
 import java.time.LocalDate
 
@@ -29,9 +32,52 @@ fun InvoicesScreen(viewModel: InvoiceComingViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.invoices) {
-            Text(text = it.toString())
+            InvoiceItem(order = it, onDelete = { viewModel.delete(it) }) {
+                viewModel.update(it)
+            }
         }
     }
+}
+
+@Composable
+fun InvoiceItem(order: InvoiceComingWithWarehouseSupplier, onDelete: Listener, onUpdate: Listener) {
+    var expanded by remember { mutableStateOf(false) }
+    ConstraintLayout(
+        Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { expanded = true }
+    ) {
+        val (col, count) = createRefs()
+        Column(modifier = Modifier.constrainAs(col) {
+            start.linkTo(parent.start)
+            top.linkTo(parent.top)
+            bottom.linkTo(parent.bottom)
+        }
+        ) {
+            androidx.compose.material3.Text(text = "Накладная №${order.id}", style = MaterialTheme.typography.titleLarge)
+            Spacer(modifier = Modifier.padding(2.dp))
+            androidx.compose.material3.Text(text = "Склад: ${order.warehouse}")
+            Spacer(modifier = Modifier.padding(2.dp))
+            androidx.compose.material3.Text(text = "Продукт: ${order.product}")
+            Spacer(modifier = Modifier.padding(2.dp))
+            androidx.compose.material3.Text(text = "Количество: ${order.count}")
+            Spacer(modifier = Modifier.padding(2.dp))
+            androidx.compose.material3.Text(text = "Произведен: ${order.manufactureDate}")
+            Spacer(modifier = Modifier.padding(2.dp))
+            androidx.compose.material3.Text(text = "Срок годности: ${order.expirationDate}")
+            DropDownChangeDelete(expanded = expanded, onDelete = onDelete, onEdit = onUpdate) {
+                expanded = false
+            }
+        }
+        androidx.compose.material3.Text(text = "Стоимость: ${order.price}", style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.constrainAs(count) {
+                top.linkTo(parent.top)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+            })
+    }
+
 }
 
 @Composable
