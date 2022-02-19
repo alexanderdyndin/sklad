@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.work.sklad.data.model.*
 import com.work.sklad.domain.model.InvoiceComingWithWarehouseSupplier
+import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.domain.model.WarehouseWithProduct
 import kotlinx.coroutines.flow.Flow
@@ -47,6 +48,9 @@ interface SkladDao {
     @Query("select invoice_coming.id, product.name as [product], warehouse.name as [warehouse], invoice_coming.price, invoice_coming.count, invoice_coming.manufactureDate, invoice_coming.expirationDate, supplier.company from invoice_coming inner join warehouse on invoice_coming.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id inner join supplier on invoice_coming.supplier_id = supplier.id")
     fun getInvoiceComing(): Flow<List<InvoiceComingWithWarehouseSupplier>>
 
+    @Query("select invoice.id, product.name as [product], warehouse.name as [warehouse], invoice.price, invoice.count, invoice.manufactureDate, invoice.expirationDate from invoice inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id")
+    fun getInvoice(): Flow<List<InvoiceWithWarehouse>>
+
     @Query("select * from product")
     fun getProducts(): Flow<List<Product>>
 
@@ -71,6 +75,10 @@ interface SkladDao {
     @Query("insert into invoice_coming(price, count, manufactureDate, expirationDate, warehouse_id, supplier_id) values (:price, :count, :manufactureDate, :expirationDate, :warehouseId, :supplierId)")
     suspend fun addInvoiceComing(price: Double, count: Int, manufactureDate: LocalDate,
                                  expirationDate: LocalDate, warehouseId: Int, supplierId: Int)
+
+    @Query("insert into invoice(price, count, manufactureDate, expirationDate, warehouse_id) values (:price, :count, :manufactureDate, :expirationDate, :warehouseId)")
+    suspend fun addInvoice(price: Double, count: Int, manufactureDate: LocalDate,
+                                 expirationDate: LocalDate, warehouseId: Int)
 
     @Query("insert into product(name, unit, price, product_type_id) values (:name, :unit, :price, :typeId)")
     suspend fun addProduct(name: String, unit: String, price: Double, typeId: Int)

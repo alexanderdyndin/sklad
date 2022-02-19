@@ -40,6 +40,9 @@
         <action
             android:id="@+id/action_menuFragment_to_invoiceComingFragment"
             app:destination="@id/invoiceComingFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_invoiceFragment"
+            app:destination="@id/invoiceFragment" />
     </fragment>
     <action android:id="@+id/action_global_menuFragment" app:destination="@id/menuFragment"/>
     <fragment
@@ -128,5 +131,21 @@
         <argument
             android:name="suppliers"
             app:argType="com.work.sklad.data.model.Supplier[]" />
+    </dialog>
+    <fragment
+        android:id="@+id/invoiceFragment"
+        android:name="com.work.sklad.feature.invoice.InvoiceFragment"
+        android:label="InvoiceFragment" >
+        <action
+            android:id="@+id/action_invoiceFragment_to_invoiceAddFragment"
+            app:destination="@id/invoiceAddFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/invoiceAddFragment"
+        android:name="com.work.sklad.feature.invoice.InvoiceAddFragment"
+        android:label="InvoiceAddFragment" >
+        <argument
+            android:name="warehouses"
+            app:argType="com.work.sklad.domain.model.WarehouseWithProduct[]" />
     </dialog>
 </navigation>
