@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.Supplier
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
+import com.work.sklad.feature.main_activity.ShowMessage
 import com.work.sklad.feature.supplier.SupplierAction.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -21,9 +22,29 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
         }
     }
 
-    fun registration(company: String, email: String, phone: String) {
+    fun addSupplier(company: String, email: String, phone: String) {
         viewModelScope.launch {
             skladDao.addSupplier(company, email, phone)
+        }
+    }
+
+    fun deleteSupplier(supplier: Supplier) {
+        viewModelScope.launch {
+            try {
+                skladDao.deleteSupplier(supplier)
+            } catch (e: Throwable){
+                events.send(ShowMessage(e.localizedMessage.orEmpty()))
+            }
+        }
+    }
+
+    fun updateSupplier(supplier: Supplier) {
+        viewModelScope.launch {
+            try {
+                skladDao.updateSupplier(supplier)
+            } catch (e: Throwable){
+                events.send(ShowMessage(e.localizedMessage.orEmpty()))
+            }
         }
     }
 

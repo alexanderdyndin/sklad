@@ -1,18 +1,17 @@
 package com.work.sklad.feature.clients
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.work.sklad.data.model.Client
 import com.work.sklad.data.model.UserType
 import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.base.views.EditText
@@ -27,8 +26,19 @@ fun ClientsScreen(viewModel: ClientViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.clients) {
-            Text(text = it.toString())
+            ClientItem(it)
         }
+    }
+}
+
+@Composable
+fun ClientItem(client: Client) {
+    Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
+        Text(text = client.company, style = MaterialTheme.typography.titleLarge)
+        Spacer(modifier = Modifier.padding(2.dp))
+        Text(text = "Email: ${client.email}")
+        Spacer(modifier = Modifier.padding(2.dp))
+        Text(text = "Телефон: ${client.phone}")
     }
 }
 

@@ -1,4 +1,4 @@
-package com.work.sklad.feature.invoice
+package com.work.sklad.feature.order
 
 import android.os.Bundle
 import android.view.View
@@ -15,18 +15,18 @@ import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.base.BaseFragment
 import com.work.sklad.feature.common.compose.ComposeScreen
 import com.work.sklad.feature.common.compose.composeView
-import com.work.sklad.feature.invoice.InvoiceAction.*
+import com.work.sklad.feature.order.OrderAction.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-class InvoiceFragment: BaseFragment() {
+class OrderFragment: BaseFragment() {
 
-    private val viewModel: InvoiceViewModel by viewModels()
+    private val viewModel: OrderViewModel by viewModels()
 
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
-            is AddInvoiceEvent -> viewModel.addInvoice(it.price, it.count, it.manufactureDate, it.expirationDate, it.warehouseId)
+            is AddOrderEvent -> viewModel.addInvoice(it.date, it.clientId, it.invoiceId, it.isCompleted)
         }
     }
 
@@ -37,9 +37,10 @@ class InvoiceFragment: BaseFragment() {
                 when (it) {
                     is OpenBottom -> {
                         val bundle = bundleOf(
-                            "warehouses" to it.warehouses.toTypedArray()
+                            "clients" to it.clients.toTypedArray(),
+                            "invoices" to it.invoices.toTypedArray()
                         )
-                        R.id.action_invoiceFragment_to_invoiceAddFragment.navigate(bundle)
+                        R.id.action_orderFragment_to_orderAddFragment.navigate(bundle)
                     }
                 }
             }
@@ -47,12 +48,12 @@ class InvoiceFragment: BaseFragment() {
     }
 
     override fun view(): View = composeView(requireContext()) {
-        ComposeScreen(title = "Накладная расхода", floatingActionButton = {
+        ComposeScreen(title = "Заказы", floatingActionButton = {
             FloatingActionButton(
                 shape = CircleShape,
                 onClick = { viewModel.openBottom() }) { Icon(Icons.Filled.Add,"") }
         }) {
-            InvoicesScreen(viewModel = viewModel)
+            OrdersScreen(viewModel = viewModel)
         }
     }
 

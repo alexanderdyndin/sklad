@@ -48,7 +48,7 @@ class InvoiceComingFragment: BaseFragment() {
     }
 
     override fun view(): View = composeView(requireContext()) {
-        ComposeScreen(title = "Расход", floatingActionButton = {
+        ComposeScreen(title = "Накладная прихода", floatingActionButton = {
             FloatingActionButton(
                 shape = CircleShape,
                 onClick = { viewModel.openBottom() }) { Icon(Icons.Filled.Add,"") }

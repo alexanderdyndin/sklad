@@ -60,9 +60,9 @@ class MenuFragment: BaseFragment() {
             viewModel.action.collectLatest {
                 when (it) {
                     Client -> R.id.action_menuFragment_to_clientFragment.navigate()
-                    Invoice -> TODO()
+                    Invoice -> R.id.action_menuFragment_to_invoiceFragment.navigate()
                     InvoiceComing -> R.id.action_menuFragment_to_invoiceComingFragment.navigate()
-                    Order -> TODO()
+                    Order -> R.id.action_menuFragment_to_orderFragment.navigate()
                     Product -> R.id.action_menuFragment_to_productFragment.navigate()
                     ProductType -> R.id.action_menuFragment_to_productTypeFragment.navigate()
                     Supplier -> R.id.action_menuFragment_to_supplierFragment2.navigate()

@@ -16,4 +16,4 @@ class AddProductFragment: BaseBottomSheet() {
 
 }
 
-data class AddProductEvent(val name: String, val unit: String, val price: Double, val typeId: Int) : Event
+data class AddProductEvent(val name: String, val unit: String, val typeId: Int) : Event

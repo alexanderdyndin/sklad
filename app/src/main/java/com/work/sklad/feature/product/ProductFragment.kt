@@ -40,7 +40,7 @@ class ProductFragment: BaseFragment() {
 
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
-            is AddProductEvent -> viewModel.registration(it.name, it.unit, it.price, it.typeId)
+            is AddProductEvent -> viewModel.registration(it.name, it.unit, it.typeId)
         }
     }
 
@@ -59,7 +59,7 @@ class ProductFragment: BaseFragment() {
     }
 
     override fun view(): View = composeView(requireContext()) {
-        ComposeScreen(title = "Клиенты", floatingActionButton = {
+        ComposeScreen(title = "Товары", floatingActionButton = {
             FloatingActionButton(
                 shape = CircleShape,
                 onClick = { viewModel.openBottom() }) { Icon(Icons.Filled.Add,"") }

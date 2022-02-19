@@ -57,8 +57,8 @@ fun MenuContent(
                 .fillMaxWidth()
         ) {
             Column {
-                FirstCard(onInvoiceClick)
-                SecondCard(onInvoiceComingClick)
+                FirstCard(onInvoiceComingClick)
+                SecondCard(onInvoiceClick)
             }
             state.user?.let {
                 UserCard(it)

@@ -6,6 +6,6 @@ data class ProductWithType(
     val id: Int,
     val name: String,
     val unit: String,
-    val price: Double,
-    val type: String
+    val type: String,
+    val count: Int
 )

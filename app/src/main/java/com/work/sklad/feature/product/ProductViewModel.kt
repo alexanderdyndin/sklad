@@ -23,9 +23,9 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
         }
     }
 
-    fun registration(name: String, unit: String, price: Double, typeId: Int) {
+    fun registration(name: String, unit: String, typeId: Int) {
         viewModelScope.launch {
-            skladDao.addProduct(name, unit, price, typeId)
+            skladDao.addProduct(name, unit, typeId)
         }
     }
 
