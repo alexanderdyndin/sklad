@@ -60,7 +60,7 @@ fun InvoiceItem(order: InvoiceWithWarehouse, onDelete: Listener, onUpdate: Liste
             Spacer(modifier = Modifier.padding(2.dp))
             androidx.compose.material3.Text(text = "Товар: ${order.product}")
             Spacer(modifier = Modifier.padding(2.dp))
-            androidx.compose.material3.Text(text = "Количество: ${order.count}")
+            androidx.compose.material3.Text(text = "Количество: ${order.count} ${order.unit}")
             Spacer(modifier = Modifier.padding(2.dp))
             androidx.compose.material3.Text(text = "Произведен: ${order.manufactureDate}")
             Spacer(modifier = Modifier.padding(2.dp))
