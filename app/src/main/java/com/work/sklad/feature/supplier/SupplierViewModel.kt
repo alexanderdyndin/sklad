@@ -39,6 +39,12 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
         }
     }
 
+
+
+    fun updateSupplierRequest(supplier: Supplier) {
+        openBottom(supplier)
+    }
+
     fun updateSupplier(supplier: Supplier) {
         viewModelScope.launch {
             try {
@@ -50,13 +56,14 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
         }
     }
 
-    fun openBottom() {
-        action(OpenBottom)
+    fun openBottom(supplier: Supplier? = null) {
+        action(OpenBottom(supplier))
     }
 }
 
 data class SupplierState(
-    val suppliers: List<Supplier> = emptyList()
+    val suppliers: List<Supplier> = emptyList(),
+    val search: String = "",
 )
 
 class SupplierMutator: BaseMutator<SupplierState>() {
@@ -65,9 +72,13 @@ class SupplierMutator: BaseMutator<SupplierState>() {
         state = state.copy(suppliers = suppliers)
     }
 
+    fun setText(text: String) {
+        state= state.copy(search = text)
+    }
+
 }
 
 sealed class SupplierAction {
-    object OpenBottom : SupplierAction()
+    data class OpenBottom(val supplier: Supplier?) : SupplierAction()
 
 }

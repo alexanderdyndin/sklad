@@ -1,6 +1,8 @@
 package com.work.sklad.feature.invoice
 
 import androidx.lifecycle.viewModelScope
+import com.work.sklad.R
+import com.work.sklad.data.model.Invoice
 import com.work.sklad.domain.model.InvoiceComingWithWarehouseSupplier
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.WarehouseWithProduct
@@ -30,13 +32,19 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
                    expirationDate: LocalDate, warehouseId: Int) {
         viewModelScope.launch {
             skladDao.addInvoice(price, count, manufactureDate, expirationDate, warehouseId)
+            closeBottom()
         }
     }
 
-    fun update(invoice: InvoiceWithWarehouse) {
+    fun updateRequest(invoice: InvoiceWithWarehouse) {
+        openBottom(invoice.toInvoice())
+    }
+
+    fun update(invoice: Invoice) {
         viewModelScope.launch {
             try{
-                skladDao.update(invoice.toInvoice())
+                skladDao.update(invoice)
+                closeBottom()
             } catch(e: Throwable) {
 
             }
@@ -53,12 +61,12 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
         }
     }
 
-    fun openBottom() {
+    fun openBottom(invoice: Invoice? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val warehouses = skladDao.getWarehouseWithProductList()
             when {
-                warehouses.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы один склад"))
-                else -> action(OpenBottom(warehouses))
+                warehouses.isEmpty() -> message("Добавьте хотя бы один склад", R.id.action_global_warehouseFragment)
+                else -> action(OpenBottom(warehouses, invoice))
             }
         }
     }
@@ -78,5 +86,5 @@ class InvoiceMutator: BaseMutator<InvoiceState>() {
 }
 
 sealed class InvoiceAction {
-    data class OpenBottom(val warehouses: List<WarehouseWithProduct>) : InvoiceAction()
+    data class OpenBottom(val warehouses: List<WarehouseWithProduct>, val invoice: Invoice?) : InvoiceAction()
 }

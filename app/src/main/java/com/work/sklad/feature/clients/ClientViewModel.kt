@@ -3,6 +3,7 @@ package com.work.sklad.feature.clients
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.Client
 import com.work.sklad.data.model.ProductType
+import com.work.sklad.domain.model.ClientDiscount
 import com.work.sklad.feature.clients.ClientAction.*
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
@@ -17,21 +18,21 @@ class ClientViewModel @Inject constructor(): BaseViewModel<ClientState, ClientMu
 
     fun init() {
         viewModelScope.launch {
-            skladDao.getClients().collectLatest {
+            skladDao.getClientsWithDiscount().collectLatest {
                 mutateState { setClients(it) }
             }
         }
     }
 
-    fun registration(company: String, email: String, phone: String) {
+    fun add(company: String, email: String, phone: String) {
         viewModelScope.launch {
             skladDao.addClient(company, email, phone)
             closeBottom()
         }
     }
 
-    fun updateRequest(client: Client) {
-        openBottom(client)
+    fun updateRequest(client: ClientDiscount) {
+        openBottom(client.toClient())
     }
 
     fun update(client: Client) {
@@ -45,10 +46,10 @@ class ClientViewModel @Inject constructor(): BaseViewModel<ClientState, ClientMu
         }
     }
 
-    fun delete(client: Client) {
+    fun delete(client: ClientDiscount) {
         viewModelScope.launch {
             try{
-                skladDao.delete(client)
+                skladDao.delete(client.toClient())
             } catch(e: Throwable) {
 
             }
@@ -61,13 +62,18 @@ class ClientViewModel @Inject constructor(): BaseViewModel<ClientState, ClientMu
 }
 
 data class ClientState(
-    val clients: List<Client> = emptyList()
+    val clients: List<ClientDiscount> = emptyList(),
+    val search: String = ""
 )
 
 class ClientMutator: BaseMutator<ClientState>() {
 
-    fun setClients(clients: List<Client>) {
+    fun setClients(clients: List<ClientDiscount>) {
         state = state.copy(clients = clients)
+    }
+
+    fun setText(text: String) {
+        state = state.copy(search = text)
     }
 
 }

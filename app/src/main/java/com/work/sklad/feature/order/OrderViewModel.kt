@@ -1,6 +1,7 @@
 package com.work.sklad.feature.order
 
 import androidx.lifecycle.viewModelScope
+import com.work.sklad.R
 import com.work.sklad.data.model.Client
 import com.work.sklad.data.model.Order
 import com.work.sklad.data.model.Supplier
@@ -24,18 +25,18 @@ import javax.inject.Inject
 class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutator, OrderAction>(OrderState(), OrderMutator()) {
 
     fun init() {
-        viewModelScope.launch {
-            skladDao.getOrders().collectLatest {
-                mutateState {
-                    setInvoices(it)
-                }
-            }
-        }
+        viewModelScope.launch { skladDao.getOrders().collectLatest { mutateState { setInvoices(it) } } }
     }
 
     fun addInvoice(date: LocalDate, clientId: Int, invoiceId: Int, isCompleted: Boolean) {
         viewModelScope.launch {
+            val discount = skladDao.clientHasDiscount(clientId)
             skladDao.addOrder(date, clientId, sharedPreferences.get(UserId, -1), invoiceId, isCompleted)
+            if (discount) {
+                skladDao.setInvoiceDiscount(invoiceId)
+                message("Была добавлена скидка постоянного покупателя 5%")
+            }
+            closeBottom()
         }
     }
 
@@ -45,8 +46,8 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
             val invoice = skladDao.getInvoice(order.invoiceId).first()
             val invoices = skladDao.getFreeInvoices().plus(invoice)
             when {
-                clients.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одного клиента"))
-                invoices.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одну накладную расхода не использованную в заказе"))
+                clients.isEmpty() -> message("Добавьте хотя бы одного клиента", R.id.action_global_clientFragment)
+                invoices.isEmpty() -> message("Добавьте хотя бы одну накладную расхода не использованную в заказе", R.id.action_global_invoiceFragment)
                 else -> action(OpenBottom(clients, invoices, order.toOrder()))
             }
         }
@@ -60,6 +61,7 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
         viewModelScope.launch {
             try{
                 skladDao.update(order)
+                closeBottom()
             } catch(e: Throwable) {
 
             }
@@ -81,8 +83,8 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
             val clients = skladDao.getClientList()
             val invoices = skladDao.getFreeInvoices()
             when {
-                clients.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одного клиента"))
-                invoices.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одну накладную расхода не использованную в заказе"))
+                clients.isEmpty() -> message("Добавьте хотя бы одного клиента", R.id.action_global_clientFragment)
+                invoices.isEmpty() -> message("Добавьте хотя бы одну накладную расхода не использованную в заказе", R.id.action_global_invoiceFragment)
                 else -> action(OpenBottom(clients, invoices, order))
             }
         }

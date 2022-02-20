@@ -22,7 +22,16 @@ interface SkladDao {
     fun getClients(): Flow<List<Client>>
 
     @Query("select * from client")
-    fun getClientList(): List<Client>
+    suspend fun getClientList(): List<Client>
+
+    @Query("select id, company, email, phone, (select count(*) from `order` where `order`.client_id = client.id) > 0 as hasDiscount from client")
+    fun getClientsWithDiscount(): Flow<List<ClientDiscount>>
+
+    @Query("select id, company, email, phone, (select count(*) from `order` where `order`.client_id = client.id) > 0 as hasDiscount from client")
+    suspend fun getClientWithDiscountList(): List<ClientDiscount>
+
+    @Query("select count(*) from `order` where `order`.client_id = :clientId")
+    suspend fun clientHasDiscount(clientId: Int): Boolean
 
     @Query("select * from supplier")
     fun getSuppliers(): Flow<List<Supplier>>
@@ -112,6 +121,9 @@ interface SkladDao {
 
     @Update
     suspend fun update(item: Invoice)
+
+    @Query("UPDATE Invoice SET price = price*0.95 where id = :id;")
+    suspend fun setInvoiceDiscount(id: Int)
 
     @Delete
     suspend fun delete(item: InvoiceComing)

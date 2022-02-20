@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.Client
+import com.work.sklad.domain.model.ClientDiscount
 import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
@@ -25,7 +26,7 @@ fun ClientsScreen(viewModel: ClientViewModel) {
     viewModel.init()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(state.clients) {
+        items(state.clients.filter { clientDiscount -> clientDiscount.company.contains(state.search) }) {
             ClientItem(it, { viewModel.delete(it) }) {
                 viewModel.updateRequest(it)
             }
@@ -34,7 +35,7 @@ fun ClientsScreen(viewModel: ClientViewModel) {
 }
 
 @Composable
-fun ClientItem(client: Client, onDelete: Listener, onUpdate: Listener) {
+fun ClientItem(client: ClientDiscount, onDelete: Listener, onUpdate: Listener) {
     var expanded by remember { mutableStateOf(false) }
     Column(modifier = Modifier.fillMaxWidth().padding(8.dp).clickable { expanded = true }) {
         Text(text = client.company, style = MaterialTheme.typography.titleLarge)
@@ -42,6 +43,10 @@ fun ClientItem(client: Client, onDelete: Listener, onUpdate: Listener) {
         Text(text = "Email: ${client.email}")
         Spacer(modifier = Modifier.padding(2.dp))
         Text(text = "Телефон: ${client.phone}")
+        if (client.hasDiscount) {
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(text = "Постоянный клиент", style = MaterialTheme.typography.bodyMedium)
+        }
         DropDownChangeDelete(expanded = expanded, onDelete = onDelete, onEdit = onUpdate) {
             expanded = false
         }

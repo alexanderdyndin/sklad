@@ -1,6 +1,7 @@
 package com.work.sklad.feature.warehouse
 
 import androidx.lifecycle.viewModelScope
+import com.work.sklad.R
 import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.data.model.Warehouse
@@ -66,7 +67,7 @@ class WarehouseViewModel @Inject constructor(): BaseViewModel<WarehouseState, Wa
         viewModelScope.launch {
             skladDao.getProductList().also {
                 if (it.isEmpty()) {
-                    events.send(ShowMessage("Необходимо добавить хотя бы один продукт"))
+                    message("Необходимо добавить хотя бы один товар", R.id.action_global_productFragment)
                 } else {
                     action(OpenBottom(it))
                 }
@@ -77,13 +78,18 @@ class WarehouseViewModel @Inject constructor(): BaseViewModel<WarehouseState, Wa
 }
 
 data class WarehouseState(
-    val warehouses: List<WarehouseWithProduct> = emptyList()
+    val warehouses: List<WarehouseWithProduct> = emptyList(),
+    val search: String = ""
 )
 
 class WarehouseMutator: BaseMutator<WarehouseState>() {
 
     fun setWarehouses(warehouses: List<WarehouseWithProduct>) {
         state = state.copy(warehouses = warehouses)
+    }
+
+    fun setText(text: String) {
+        state = state.copy(search = text)
     }
 
 }

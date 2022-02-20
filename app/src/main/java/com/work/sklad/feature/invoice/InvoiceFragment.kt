@@ -3,10 +3,10 @@ package com.work.sklad.feature.invoice
 import android.os.Bundle
 import android.view.View
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -27,6 +27,7 @@ class InvoiceFragment: BaseFragment() {
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
             is AddInvoiceEvent -> viewModel.addInvoice(it.price, it.count, it.manufactureDate, it.expirationDate, it.warehouseId)
+            is EditInvoiceEvent -> viewModel.update(it.invoice)
         }
     }
 
@@ -38,7 +39,9 @@ class InvoiceFragment: BaseFragment() {
                     is OpenBottom -> {
                         val bundle = bundleOf(
                             "warehouses" to it.warehouses.toTypedArray()
-                        )
+                        ).apply {
+                            it.invoice?.let { invoice -> putSerializable("invoice", invoice) }
+                        }
                         R.id.action_invoiceFragment_to_invoiceAddFragment.navigate(bundle)
                     }
                 }

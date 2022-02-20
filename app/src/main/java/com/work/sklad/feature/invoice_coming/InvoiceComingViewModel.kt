@@ -1,6 +1,7 @@
 package com.work.sklad.feature.invoice_coming
 
 import androidx.lifecycle.viewModelScope
+import com.work.sklad.R
 import com.work.sklad.data.model.InvoiceComing
 import com.work.sklad.data.model.Supplier
 import com.work.sklad.domain.model.InvoiceComingWithWarehouseSupplier
@@ -66,8 +67,8 @@ class InvoiceComingViewModel @Inject constructor(): BaseViewModel<InvoiceComingS
             val warehouses = skladDao.getWarehouseWithProductList()
             val suppliers = skladDao.getSuppliersList()
             when {
-                warehouses.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы один склад"))
-                suppliers.isEmpty() -> events.send(ShowMessage("Добавьте хотя бы одного поставщика"))
+                warehouses.isEmpty() -> message("Добавьте хотя бы один склад", R.id.action_global_warehouseFragment)
+                suppliers.isEmpty() -> message("Добавьте хотя бы одного поставщика", R.id.action_global_supplierFragment2)
                 else -> action(OpenBottom(warehouses, suppliers, invoiceComing))
             }
         }

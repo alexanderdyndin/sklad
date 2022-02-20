@@ -3,7 +3,7 @@ package com.work.sklad.feature.order
 import android.os.Bundle
 import android.view.View
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.FloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add

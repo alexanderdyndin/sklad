@@ -77,8 +77,8 @@ fun MenuContent(
                 .height(100.dp)
                 .fillMaxWidth()
         ) {
-            CommonCard1("Продукты", onProductClick)
-            CommonCard2("Типы продуктов", onProductTypeClick)
+            CommonCard1("Товары", onProductClick)
+            CommonCard2("Типы товаров", onProductTypeClick)
         }
         Row(
             Modifier

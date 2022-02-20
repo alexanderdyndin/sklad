@@ -61,7 +61,7 @@ class ProductTypeFragment: BaseFragment() {
     }
 
     override fun view(): View = composeView(requireContext()) {
-        ComposeScreen(title = "Типы продукта", floatingActionButton = {
+        ComposeScreen(title = "Типы товара", floatingActionButton = {
             FloatingActionButton(
                 shape = CircleShape,
                 onClick = { viewModel.openBottom() }) { Icon(Icons.Filled.Add,"") }

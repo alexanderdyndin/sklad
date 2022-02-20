@@ -30,7 +30,7 @@ fun WarehousesScreen(viewModel: WarehouseViewModel) {
     viewModel.init()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(state.warehouses) {
+        items(state.warehouses.filter { warehouseWithProduct -> warehouseWithProduct.name.contains(state.search) }) {
             WarehouseItem(warehouse = it, onDelete = { viewModel.delete(it) }) {viewModel.updateRequest(it)}
         }
     }

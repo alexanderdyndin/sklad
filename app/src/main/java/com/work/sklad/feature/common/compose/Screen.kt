@@ -3,8 +3,10 @@ package com.work.sklad.feature.common.compose
 import android.content.Context
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -19,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.work.sklad.feature.common.AppTheme
+import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.utils.isNotNull
 
 fun composeView(context: Context, content: @Composable () -> Unit): ComposeView =
@@ -76,6 +79,30 @@ fun ComposeScreen(navigationListener: (() -> Unit)? = null, title: String? = nul
                     toolbarBackgroundColor
                 } ?: MaterialTheme.colors.primarySurface,
             )
+        },
+        content = content,
+        bottomBar = {
+
+        }
+    )
+}
+
+@Composable
+fun ComposeSearchScreen(hint: String, text: String, textChange: (String) -> Unit,
+                  floatingActionButton: @Composable () -> Unit = {},
+                  content: @Composable (PaddingValues) -> Unit
+) {
+    Scaffold(
+        floatingActionButton = floatingActionButton,
+        topBar = {
+            Surface(color =  MaterialTheme.colors.primarySurface, elevation = AppBarDefaults.TopAppBarElevation) {
+                TextField(
+                    value = text,
+                    onValueChange = textChange,
+                    label = { Text(hint, style = MaterialTheme.typography.caption) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+        }
         },
         content = content,
         bottomBar = {

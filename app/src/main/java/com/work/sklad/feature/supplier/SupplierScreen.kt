@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.Supplier
+import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.utils.Listener
@@ -22,8 +23,8 @@ fun SuppliersScreen(viewModel: SupplierViewModel) {
     viewModel.init()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(state.suppliers) {
-            SupplierItem(it, {viewModel.deleteSupplier(it)}, {viewModel.updateSupplier(it)})
+        items(state.suppliers.filter { supplier -> supplier.company.contains(state.search) }) {
+            SupplierItem(it, {viewModel.deleteSupplier(it)}, {viewModel.updateSupplierRequest(it)})
         }
     }
 }
@@ -47,21 +48,21 @@ fun SupplierItem(supplier: Supplier, onDelete: Listener, onUpdate: Listener) {
 }
 
 @Composable
-fun AddSupplierScreen(supplier: TypedListener<AddSupplierEvent>) {
+fun AddSupplierScreen(supplier: Supplier?, listener: TypedListener<Event>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth()
     ) {
-        var company by rememberSaveable { mutableStateOf("") }
-        var email by rememberSaveable { mutableStateOf("") }
-        var phone by rememberSaveable { mutableStateOf("") }
+        var company by rememberSaveable { mutableStateOf(supplier?.company.orEmpty()) }
+        var email by rememberSaveable { mutableStateOf(supplier?.email.orEmpty()) }
+        var phone by rememberSaveable { mutableStateOf(supplier?.phone.orEmpty()) }
         EditText(value = company, label = "Компания"){ company = it }
         EditText(value = email, label = "Email"){ email = it }
         EditText(value = phone, label = "Телефон"){ phone = it }
-        Button(onClick = { supplier.invoke(AddSupplierEvent(company, email, phone)) }) {
-            Text(text = "Добавить")
+        Button(onClick = { listener.invoke(supplier?.let { EditSupplierEvent(it.copy(company = company, email = email, phone = phone)) } ?: AddSupplierEvent(company, email, phone)) }) {
+            Text(text = supplier?.let {"Редактировать"} ?: "Добавить")
         }
     }
 }

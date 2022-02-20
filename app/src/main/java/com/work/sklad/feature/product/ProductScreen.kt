@@ -29,7 +29,7 @@ fun ProductsScreen(viewModel: ProductViewModel) {
     viewModel.init()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(state.products) {
+        items(state.products.filter { it.name.contains(state.search) }) {
             ProductItem(it, {viewModel.delete(it)}) {viewModel.updateRequest(it)}
         }
     }
