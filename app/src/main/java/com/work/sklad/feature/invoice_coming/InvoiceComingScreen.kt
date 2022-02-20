@@ -99,7 +99,7 @@ fun AddInvoiceComingScreen(invoice: InvoiceComing?, warehouses: Array<WarehouseW
         EditText(value = price, label = "Цена", keyboardType = KeyboardType.Number){ price = it }
         DatePicker(title = "Изготовлено", date = date1, onDateChange = {date1=it})
         DatePicker(title = "Годен до", date = date2, onDateChange = {date2=it})
-        Spinner(name = "Склад", stateList = warehouses, initialState = warehouse, nameMapper = {"${it.name} - ${it.product} -  ${it.getFreePlace()}"} ) {
+        Spinner(name = "Склад", stateList = warehouses, initialState = warehouse, nameMapper = {"${it.name} - ${it.product} -  ${it.getFreePlace()} ${it.unit}"} ) {
             warehouse = it
         }
         Spinner(name = "Поставщик", stateList = suppliers, initialState = supplier, nameMapper = {it.company} ) {

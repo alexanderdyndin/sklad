@@ -61,7 +61,7 @@ fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdat
             Spacer(modifier = Modifier.padding(2.dp))
             androidx.compose.material3.Text(text = "Пользователь: ${order.user}")
             Spacer(modifier = Modifier.padding(2.dp))
-            androidx.compose.material3.Text(text = "Накладаная №${order.invoiceId}")
+            androidx.compose.material3.Text(text = "Накладная №${order.invoiceId}")
             Spacer(modifier = Modifier.padding(2.dp))
             androidx.compose.material3.Text(text = "Склад: ${order.warehouse}")
             Spacer(modifier = Modifier.padding(2.dp))
@@ -84,7 +84,6 @@ fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdat
                 bottom.linkTo(parent.bottom)
             })
     }
-
 }
 
 @Composable

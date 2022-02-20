@@ -148,14 +148,14 @@ fun UserCard(
                 .fillMaxWidth()
         ) {
             Text(
-                text = user.name,
+                text = user.surname,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),
                 textAlign = TextAlign.Center
             )
             Text(
-                text = user.surname,
+                text = user.name,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.CenterHorizontally),

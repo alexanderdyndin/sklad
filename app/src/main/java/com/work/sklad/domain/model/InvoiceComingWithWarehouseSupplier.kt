@@ -13,7 +13,8 @@ data class InvoiceComingWithWarehouseSupplier(
     val manufactureDate: LocalDate,
     val expirationDate: LocalDate,
     val supplierId: Int,
-    val company: String
+    val company: String,
+    val unit: String
 ) {
     fun toInvoiceComing() = InvoiceComing(id, price, count, manufactureDate, expirationDate, warehouseId, supplierId)
 }

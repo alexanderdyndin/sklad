@@ -12,7 +12,8 @@ data class InvoiceWithWarehouse(
     val price: Double,
     val count: Int,
     val manufactureDate: LocalDate,
-    val expirationDate: LocalDate
+    val expirationDate: LocalDate,
+    val unit: String
 ): Serializable {
     fun toInvoice() = Invoice(id, price, count, manufactureDate, expirationDate, warehouseId)
 }

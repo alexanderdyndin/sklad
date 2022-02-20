@@ -96,7 +96,7 @@ fun AddInvoiceScreen(invoice: Invoice?, warehouses: Array<WarehouseWithProduct>,
         EditText(value = price, label = "Цена", keyboardType = KeyboardType.Number){ price = it }
         DatePicker(title = "Изготовлено", date = date1, onDateChange = {date1=it})
         DatePicker(title = "Годен до", date = date2, onDateChange = {date2=it})
-        Spinner(name = "Склад", stateList = warehouses, initialState = warehouse, nameMapper = {"${it.name} - ${it.product} -  ${it.getBusyPlace()}"} ) {
+        Spinner(name = "Склад", stateList = warehouses, initialState = warehouse, nameMapper = {"${it.name} - ${it.product} -  ${it.getBusyPlace()} ${it.unit}"} ) {
             warehouse = it
         }
         ButtonView(text = invoice?.let { "Редактировать" } ?: "Добавить") {

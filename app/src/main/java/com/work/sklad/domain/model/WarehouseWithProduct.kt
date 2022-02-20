@@ -12,7 +12,8 @@ data class WarehouseWithProduct(
     val invoiceOut: Long?,
     val productId: Int,
     val product: String,
-    val type: String
+    val type: String,
+    val unit: String
 ) : Serializable {
     fun toWarehouse(): Warehouse = Warehouse(id, name, productId, place)
     fun getFreePlace() = place - (invoiceIn ?: 0) - (invoiceOut ?: 0)

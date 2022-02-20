@@ -32,8 +32,20 @@ class InvoiceComingViewModel @Inject constructor(): BaseViewModel<InvoiceComingS
     fun addInvoice(price: Double, count: Int, manufactureDate: LocalDate,
                    expirationDate: LocalDate, warehouseId: Int, supplierId: Int) {
         viewModelScope.launch {
-            skladDao.addInvoiceComing(price, count, manufactureDate, expirationDate, warehouseId, supplierId)
-            closeBottom()
+            val warehouse = skladDao.getWarehouse(warehouseId)
+            if (warehouse.getFreePlace() >= count) {
+                skladDao.addInvoiceComing(
+                    price,
+                    count,
+                    manufactureDate,
+                    expirationDate,
+                    warehouseId,
+                    supplierId
+                )
+                closeBottom()
+            } else {
+                message("Нельзя добавить продукта больше, чем количество свободного места на складе")
+            }
         }
     }
 

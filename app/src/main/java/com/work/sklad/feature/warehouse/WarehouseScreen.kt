@@ -64,16 +64,12 @@ fun WarehouseItem(warehouse: WarehouseWithProduct, onDelete: Listener, onUpdate:
             Text(text = "Занято места: ${warehouse.invoiceIn?.let { it - (warehouse.invoiceOut ?: 0) } ?: 0}")
             Spacer(modifier = Modifier.padding(2.dp))
             Text(text = "Товар : ${warehouse.product}")
+            Spacer(modifier = Modifier.padding(2.dp))
+            Text(text = "Свободно: ${warehouse.getFreePlace()} ${warehouse.unit}")
             DropDownChangeDelete(expanded = expanded, onDelete = onDelete, onEdit = onUpdate) {
                 expanded = false
             }
         }
-        Text(text = "Свободно: ${warehouse.place - (warehouse.invoiceIn?:0) + (warehouse.invoiceOut ?: 0) }", style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.constrainAs(count) {
-                top.linkTo(parent.top)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-            })
     }
 
 }
