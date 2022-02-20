@@ -17,6 +17,7 @@ import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.feature.common.Event
+import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.compose.views.Spinner
@@ -89,10 +90,10 @@ fun AddProductScreen(product: Product?, types: Array<ProductType>, productListen
         Spinner(stateList = types, initialState = type, nameMapper = {it.type} ) {
             type = it
         }
-        Button(onClick = { productListener.invoke(product?.let {
-            EditProductEvent(it.copy(name = name, unit = unit, productTypeId = type.id))
-        } ?: AddProductEvent(name, unit, type.id)) }) {
-            Text(text = product?.let { "Редактировать" } ?: "Добавить")
+        ButtonView(text = product?.let { "Редактировать" } ?: "Добавить") {
+            productListener.invoke(product?.let {
+                EditProductEvent(it.copy(name = name, unit = unit, productTypeId = type.id)) }
+                ?: AddProductEvent(name, unit, type.id))
         }
     }
 }

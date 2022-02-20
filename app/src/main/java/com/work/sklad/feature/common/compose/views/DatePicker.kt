@@ -3,6 +3,7 @@ package com.work.sklad.feature.common.compose.views
 import android.app.DatePickerDialog
 import android.widget.DatePicker
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,12 +35,12 @@ fun DatePicker(title: String, date: LocalDate, onDateChange: (LocalDate) -> Unit
         }, mYear, mMonth, mDay
     )
     Row(
-        Modifier.fillMaxWidth(),
+        Modifier.fillMaxWidth(0.8f),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Button(onClick = {
             datePickerDialog.show()
-        }) {
+        }, shape = RoundedCornerShape(4.dp)) {
             Text(text = "Выбор даты")
         }
         Spacer(modifier = Modifier.size(5.dp))

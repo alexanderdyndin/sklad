@@ -7,6 +7,7 @@ import com.work.sklad.data.model.ProductType
 import com.work.sklad.data.model.Warehouse
 import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.domain.model.WarehouseWithProduct
+import com.work.sklad.feature.common.Strings
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
 import com.work.sklad.feature.main_activity.ShowMessage
@@ -29,6 +30,10 @@ class WarehouseViewModel @Inject constructor(): BaseViewModel<WarehouseState, Wa
 
     fun add(name: String, freePlace: Int, productId: Int) {
         viewModelScope.launch {
+            if (name.isEmpty()) {
+                message(Strings.EmptyFieldError)
+                return@launch
+            }
             skladDao.addWarehouse(name, freePlace, productId)
             closeBottom()
         }

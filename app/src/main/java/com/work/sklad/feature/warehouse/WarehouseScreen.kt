@@ -1,5 +1,6 @@
 package com.work.sklad.feature.warehouse
 
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -18,11 +20,14 @@ import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.Warehouse
 import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.Event
+import com.work.sklad.feature.common.Strings
+import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.compose.views.Spinner
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
+import com.work.sklad.feature.main_activity.ShowMessage
 
 @Composable
 fun WarehousesScreen(viewModel: WarehouseViewModel) {
@@ -63,7 +68,7 @@ fun WarehouseItem(warehouse: WarehouseWithProduct, onDelete: Listener, onUpdate:
                 expanded = false
             }
         }
-        Text(text = "Свободное место: ${warehouse.place - (warehouse.invoiceIn?:0) + (warehouse.invoiceOut ?: 0) }", style = MaterialTheme.typography.titleLarge,
+        Text(text = "Свободно: ${warehouse.place - (warehouse.invoiceIn?:0) + (warehouse.invoiceOut ?: 0) }", style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.constrainAs(count) {
                 top.linkTo(parent.top)
                 end.linkTo(parent.end)
@@ -82,15 +87,20 @@ fun AddWarehouseScreen(warehouse: Warehouse?, products: Array<Product>, Warehous
             .fillMaxWidth()
     ) {
         var name by rememberSaveable { mutableStateOf(warehouse?.name.orEmpty()) }
-        var place by rememberSaveable { mutableStateOf(warehouse?.freePlace ?: 0) }
+        var place by rememberSaveable { mutableStateOf(warehouse?.freePlace?.toString() ?: "0") }
         EditText(value = name, label = "Название"){ name = it }
-        EditText(value = place.toString(), label = "Вместимость", keyboardType = KeyboardType.Number){ place = it.toInt() }
+        EditText(value = place, label = "Вместимость", keyboardType = KeyboardType.Number){ place = it.filter { char -> char in Strings.Numbers } }
         var type by rememberSaveable { mutableStateOf(warehouse?.productId?.let { id -> products.find { it.id == id } } ?: products.first()) }
-        Spinner(stateList = products, initialState = type, nameMapper = {it.name} ) {
+        Spinner(name = "Товар", stateList = products, initialState = type, nameMapper = {it.name} ) {
             type = it
         }
-        Button(onClick = { Warehouse.invoke(warehouse?.let { EditWarehouseEvent(it.copy(name = name, freePlace = place, productId = type.id)) } ?: AddWarehouseEvent(name, place, type.id)) }) {
-            Text(text = warehouse?.let { "Редактировать" } ?: "Добавить")
+        ButtonView(text = warehouse?.let { "Редактировать" } ?: "Добавить") {
+            try {
+                Warehouse.invoke(warehouse?.let { EditWarehouseEvent(it.copy(name = name, freePlace = place.toInt(),
+                    productId = type.id)) } ?: AddWarehouseEvent(name, place.toInt(), type.id))
+            } catch(e: Throwable) {
+                if (e is NumberFormatException) Warehouse.invoke(ShowMessage("Неверный формат вместимости склада"))
+            }
         }
     }
 }

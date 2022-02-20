@@ -15,34 +15,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun <T> Spinner(stateList: Array<T>, initialState: T, nameMapper: (T) -> String, onChanged: (T) -> Unit) {
+fun <T> Spinner(name: String = "",stateList: Array<T>, initialState: T, nameMapper: (T) -> String, onChanged: (T) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-
-    Box(Modifier.fillMaxWidth(),contentAlignment = Alignment.Center) {
-        Row(
-            Modifier
-                .padding(16.dp)
-                .clickable {
-                    expanded = !expanded
-                },
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = nameMapper.invoke(initialState),fontSize = 18.sp,modifier = Modifier.padding(end = 8.dp))
-            Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = "")
-            DropdownMenu(expanded = expanded, onDismissRequest = {
-                expanded = false
-            }) {
-                stateList.forEach{ item ->
-                    DropdownMenuItem(onClick = {
-                        expanded = false
-                        onChanged.invoke(item)
-                    }) {
-                        Text(text = nameMapper.invoke(item))
+    Row(Modifier.fillMaxWidth(0.8f), verticalAlignment = Alignment.CenterVertically) {
+        Text(text = name, modifier = Modifier.padding(end = 10.dp))
+        Box(Modifier, contentAlignment = Alignment.Center) {
+            Row(
+                Modifier
+                    .padding(16.dp)
+                    .clickable {
+                        expanded = !expanded
+                    },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = nameMapper.invoke(initialState),
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(end = 8.dp)
+                )
+                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = "")
+                DropdownMenu(expanded = expanded, onDismissRequest = {
+                    expanded = false
+                }) {
+                    stateList.forEach { item ->
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            onChanged.invoke(item)
+                        }) {
+                            Text(text = nameMapper.invoke(item))
+                        }
                     }
                 }
             }
         }
     }
-
 }

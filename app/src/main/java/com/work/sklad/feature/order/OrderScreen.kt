@@ -19,6 +19,7 @@ import com.work.sklad.data.model.Order
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
 import com.work.sklad.feature.common.Event
+import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DatePicker
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.Spinner
@@ -100,21 +101,22 @@ fun AddOrderScreen(order: Order?, clients: Array<Client>, invoices: Array<Invoic
         var invoice by rememberSaveable { mutableStateOf(order?.invoiceId?.let { invoices.find { invoice -> invoice.id == it } } ?: invoices.first()) }
         var completed by rememberSaveable { mutableStateOf(order?.isCompleted ?: false) }
         DatePicker(title = "Дата заказа", date = date1, onDateChange = {date1=it})
-        Spinner(stateList = clients, initialState = client, nameMapper = {it.company} ) {
+        Spinner(name = "Клиент", stateList = clients, initialState = client, nameMapper = {it.company} ) {
             client = it
         }
-        Spinner(stateList = invoices, initialState = invoice, nameMapper = {"${it.warehouse} - ${it.product} - ${it.count}"} ) {
+        Spinner(name = "Накладная", stateList = invoices, initialState = invoice, nameMapper = {"${it.id} - ${it.product} - ${it.count}"} ) {
             invoice = it
         }
-        Row() {
-            Checkbox(checked = completed, onCheckedChange = {completed = it})
-            Text(text = "Выполнен", modifier = Modifier.padding(end = 8.dp))
+        Row(Modifier.padding(bottom = 5.dp)) {
+            Checkbox(checked = completed, onCheckedChange = {completed = it}, modifier = Modifier.padding(end = 5.dp))
+            Text(text = "Выполнен", modifier = Modifier)
         }
+        ButtonView(text = order?.let { "Редактировать" } ?: "Добавить") {
+            listener.invoke(order?.let {
+                EditOrderEvent(it.copy(date = date1, clientId = client.id, invoiceId = invoice.id,
+                    isCompleted = completed))
+            } ?: AddOrderEvent(date1, client.id, invoice.id, completed))
 
-        Button(onClick = { listener.invoke(order?.let {
-            EditOrderEvent(it.copy(date = date1, clientId = client.id, invoiceId = invoice.id, isCompleted = completed))
-        } ?: AddOrderEvent(date1, client.id, invoice.id, completed)) }) {
-            Text(text = order?.let { "Редактировать" } ?: "Добавить")
         }
     }
 }

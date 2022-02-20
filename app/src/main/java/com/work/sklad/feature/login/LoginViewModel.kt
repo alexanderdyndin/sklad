@@ -3,6 +3,7 @@ package com.work.sklad.feature.login
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.UserType
 import com.work.sklad.feature.common.Strings
+import com.work.sklad.feature.common.Strings.EmptyFieldError
 import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
@@ -51,12 +52,16 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
         action(OpenBottomSheet)
     }
 
-    fun register(login: String, password: String, userType: UserType, name: String, surname: String, patronymic: String?, phone: String) {
+    fun register(login: String, password: String, userType: UserType, name: String, surname: String, patronymic: String, phone: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                if (login.isEmpty() || password.isEmpty() || name.isEmpty() || surname.isEmpty() || phone.isEmpty()) {
+                    message(EmptyFieldError)
+                    return@launch
+                }
                 skladDao.searchUser(login).also {
                     if (it.isEmpty()) {
-                        skladDao.addUser(login, password, userType, name, surname, patronymic, phone)
+                        skladDao.addUser(login, password, userType, name, surname, if (patronymic.isNotEmpty()) patronymic else null, phone)
                         closeBottom()
                         message("Регистрация успешна")
                     } else {

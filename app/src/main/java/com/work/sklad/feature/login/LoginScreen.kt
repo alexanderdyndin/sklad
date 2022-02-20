@@ -12,11 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.UserType
+import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.compose.views.Spinner
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.Typed3Listener
 import com.work.sklad.feature.common.utils.TypedListener
+import com.work.sklad.feature.common.utils.limitedChangeListener
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
@@ -50,31 +52,32 @@ fun AuthContent(onLoginClick: Typed3Listener<String, String, Boolean>, registrat
         TextField(
             value = login,
             onValueChange = {
-                login = it
+                login = it.limitedChangeListener(15)
             },
-            label = { Text("Логин") }
+            label = { Text("Логин") },
+            modifier = Modifier.fillMaxWidth(.8f)
         )
+        Spacer(modifier = Modifier.padding(5.dp))
         TextField(
             value = password,
             onValueChange = {
-                password = it
+                password = it.limitedChangeListener(15)
             },
-            label = { Text("Пароль") }
+            label = { Text("Пароль") },
+            modifier = Modifier.fillMaxWidth(.8f)
         )
-        Row(Modifier.fillMaxWidth()) {
+        Spacer(modifier = Modifier.padding(5.dp))
+        Row(Modifier) {
             Checkbox(checked = checked, onCheckedChange = {
                 checked = it
                 rememberUser.invoke(it)})
             Spacer(modifier = Modifier.padding(5.dp))
             Text(text = "Запомнить меня")
         }
-
-        Button(onClick = { onLoginClick.invoke(login, password, checked) }) {
-            Text(text = "Войти")
-        }
-        Button(onClick = { registration.invoke() }) {
-            Text(text = "Регистрация")
-        }
+        Spacer(modifier = Modifier.padding(5.dp))
+        ButtonView(text = "Войти") { onLoginClick.invoke(login, password, checked) }
+        Spacer(modifier = Modifier.padding(5.dp))
+        ButtonView(text = "Регистрация") { registration.invoke() }
     }
 }
 
@@ -102,8 +105,8 @@ fun Registration(registration: TypedListener<RegistrationEvent>) {
         Spinner(stateList = UserType.values(), initialState = userType, nameMapper = { it.toString() }) {
             userType = it
         }
-        Button(onClick = { registration.invoke(RegistrationEvent(login, password, userType, name, surname, patronymic, phone)) }) {
-            Text(text = "Регистрация")
+        ButtonView(text = "Регистрация") {
+            registration.invoke(RegistrationEvent(login, password, userType, name, surname, patronymic, phone))
         }
     }
 }

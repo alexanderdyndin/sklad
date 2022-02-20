@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.feature.common.Event
+import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.utils.Listener
@@ -52,8 +53,9 @@ fun AddProductTypeScreen(productType: ProductType?, ProductType: TypedListener<E
     ) {
         var type by rememberSaveable { mutableStateOf(productType?.type.orEmpty()) }
         EditText(value = type, label = "Название"){ type = it }
-        Button(onClick = { ProductType.invoke(productType?.let { EditProductTypeEvent(it.copy(type = type)) } ?: AddProductTypeEvent(type)) }) {
-            Text(text = productType?.let {"Редактировать" } ?: "Добавить")
+        ButtonView(text = productType?.let { "Редактировать" } ?: "Добавить") {
+            ProductType.invoke(productType?.let { EditProductTypeEvent(it.copy(type = type)) }
+                ?: AddProductTypeEvent(type))
         }
     }
 }

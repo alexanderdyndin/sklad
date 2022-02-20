@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.Client
 import com.work.sklad.domain.model.ClientDiscount
 import com.work.sklad.feature.common.Event
+import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.utils.Listener
@@ -67,12 +68,10 @@ fun AddClientScreen(clientEntity: Client?, client: TypedListener<Event>) {
         EditText(value = company, label = "Компания"){ company = it }
         EditText(value = email, label = "Email"){ email = it }
         EditText(value = phone, label = "Телефон"){ phone = it }
-        Button(onClick = {
+        ButtonView(text = clientEntity?.let { "Редактировать" } ?: "Добавить") {
             client.invoke(clientEntity?.let {
                 EditClientEvent(it.copy(company = company, email = email, phone = phone))
             }?: AddClientEvent(company, email, phone))
-        }) {
-            Text(text = clientEntity?.let {"Редактировать"} ?: "Добавить")
         }
     }
 }

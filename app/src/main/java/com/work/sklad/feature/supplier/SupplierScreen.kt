@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.Supplier
 import com.work.sklad.feature.common.Event
+import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.utils.Listener
@@ -61,8 +62,9 @@ fun AddSupplierScreen(supplier: Supplier?, listener: TypedListener<Event>) {
         EditText(value = company, label = "Компания"){ company = it }
         EditText(value = email, label = "Email"){ email = it }
         EditText(value = phone, label = "Телефон"){ phone = it }
-        Button(onClick = { listener.invoke(supplier?.let { EditSupplierEvent(it.copy(company = company, email = email, phone = phone)) } ?: AddSupplierEvent(company, email, phone)) }) {
-            Text(text = supplier?.let {"Редактировать"} ?: "Добавить")
+        ButtonView(text = supplier?.let { "Редактировать" } ?: "Добавить") {
+            listener.invoke(supplier?.let { EditSupplierEvent(it.copy(company = company, email = email,
+                phone = phone)) } ?: AddSupplierEvent(company, email, phone))
         }
     }
 }

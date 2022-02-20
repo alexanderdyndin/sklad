@@ -14,5 +14,5 @@ class RegistrationFragment: BaseBottomSheet() {
 }
 
 data class RegistrationEvent(val login: String, val password: String, val userType: UserType,
-                             val name: String, val surname: String, val patronymic: String?,
+                             val name: String, val surname: String, val patronymic: String,
                              val phone: String) : Event
