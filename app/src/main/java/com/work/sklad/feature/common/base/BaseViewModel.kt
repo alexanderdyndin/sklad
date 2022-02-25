@@ -9,6 +9,7 @@ import com.work.sklad.data.dao.SkladDao
 import com.work.sklad.domain.repository.ISharedPreferencesRepository
 import com.work.sklad.feature.common.Events
 import com.work.sklad.feature.common.Screens
+import com.work.sklad.feature.main_activity.OpenPdf
 import com.work.sklad.feature.main_activity.ShowMessage
 import com.work.sklad.feature.main_activity.ShowNavSnackbar
 import kotlinx.coroutines.Dispatchers
@@ -69,5 +70,9 @@ abstract class BaseViewModel<TState, TMutator : BaseMutator<TState>, TAction>(
 
     protected fun closeBottom() {
         events.send(CloseBottom)
+    }
+
+    protected fun openPdf(html: String) {
+        events.send(OpenPdf(html))
     }
 }

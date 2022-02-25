@@ -72,6 +72,9 @@ interface SkladDao {
     @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user, invoice.id as invoiceId, invoice.price, warehouse.name as warehouse, product.name as product, `order`.isCompleted from `order` inner join invoice on invoice.id = `order`.invoice_id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id")
     fun getOrders(): Flow<List<OrderWithInvoiceUserClient>>
 
+    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user, invoice.id as invoiceId, invoice.price, warehouse.name as warehouse, product.name as product, `order`.isCompleted from `order` inner join invoice on invoice.id = `order`.invoice_id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id where `order`.invoice_id = :invoiceId")
+    suspend fun getOrder(invoiceId: Int): List<OrderWithInvoiceUserClient>
+
     @Query("select * from product")
     fun getProducts(): Flow<List<Product>>
 

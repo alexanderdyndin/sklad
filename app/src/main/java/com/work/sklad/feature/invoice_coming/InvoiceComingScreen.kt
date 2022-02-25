@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,15 +34,13 @@ fun InvoicesScreen(viewModel: InvoiceComingViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.invoices) {
-            InvoiceItem(order = it, onDelete = { viewModel.delete(it) }) {
-                viewModel.updateRequest(it)
-            }
+            InvoiceItem(order = it, onDelete = { viewModel.delete(it) }, onPdf = {viewModel.openPdf(it)}, onUpdate = {viewModel.updateRequest(it)})
         }
     }
 }
 
 @Composable
-fun InvoiceItem(order: InvoiceComingWithWarehouseSupplier, onDelete: Listener, onUpdate: Listener) {
+fun InvoiceItem(order: InvoiceComingWithWarehouseSupplier, onDelete: Listener, onUpdate: Listener, onPdf: Listener) {
     var expanded by remember { mutableStateOf(false) }
     ConstraintLayout(
         Modifier
@@ -66,8 +66,22 @@ fun InvoiceItem(order: InvoiceComingWithWarehouseSupplier, onDelete: Listener, o
             androidx.compose.material3.Text(text = "Произведен: ${order.manufactureDate}")
             Spacer(modifier = Modifier.padding(2.dp))
             androidx.compose.material3.Text(text = "Срок годности: ${order.expirationDate}")
-            DropDownChangeDelete(expanded = expanded, onDelete = onDelete, onEdit = onUpdate) {
-                expanded = false
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {expanded = false}
+            ) {
+                DropdownMenuItem(text = { androidx.compose.material3.Text("Редактировать") }, onClick = {
+                    onUpdate.invoke()
+                    expanded = false
+                })
+                DropdownMenuItem(text = { androidx.compose.material3.Text("Удалить") }, onClick = {
+                    onDelete.invoke()
+                    expanded = false
+                })
+                DropdownMenuItem(text = { androidx.compose.material3.Text("в Pdf") }, onClick = {
+                    onPdf.invoke()
+                    expanded = false
+                })
             }
         }
         androidx.compose.material3.Text(text = "Стоимость: ${order.price}", style = MaterialTheme.typography.titleLarge,

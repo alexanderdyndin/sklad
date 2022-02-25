@@ -107,4 +107,6 @@ dependencies {
     //accompanist
     implementation "com.google.accompanist:accompanist-insets:$accompanist_version"
 
+    implementation 'com.github.tejpratap46:PDFCreatorAndroid:3.0.2'
+
 }

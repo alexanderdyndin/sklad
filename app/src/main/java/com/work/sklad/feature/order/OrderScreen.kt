@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,13 +36,13 @@ fun OrdersScreen(viewModel: OrderViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.orders) {
-            WarehouseItem(it, {viewModel.delete(it)}, {viewModel.updateRequest(it)}) { checked -> viewModel.update(it.copy(isCompleted = checked)) }
+            WarehouseItem(it, {viewModel.delete(it)}, {viewModel.updateRequest(it)}, onPdf = {viewModel.openPdf(it)}) { checked -> viewModel.update(it.copy(isCompleted = checked)) }
         }
     }
 }
 
 @Composable
-fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdate: Listener, updateChecked: TypedListener<Boolean>) {
+fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdate: Listener, onPdf: Listener, updateChecked: TypedListener<Boolean>) {
     var expanded by remember { mutableStateOf(false) }
     ConstraintLayout(
         Modifier
@@ -73,8 +75,22 @@ fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdat
                 Checkbox(checked = order.isCompleted, onCheckedChange = updateChecked, modifier = Modifier.padding(end = 5.dp))
                 Text(text = "Выполнен")
             }
-            DropDownChangeDelete(expanded = expanded, onDelete = onDelete, onEdit = onUpdate) {
-                expanded = false
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {expanded = false}
+            ) {
+                DropdownMenuItem(text = { androidx.compose.material3.Text("Редактировать") }, onClick = {
+                    onUpdate.invoke()
+                    expanded = false
+                })
+                DropdownMenuItem(text = { androidx.compose.material3.Text("Удалить") }, onClick = {
+                    onDelete.invoke()
+                    expanded = false
+                })
+                DropdownMenuItem(text = { androidx.compose.material3.Text("в Pdf") }, onClick = {
+                    onPdf.invoke()
+                    expanded = false
+                })
             }
         }
         androidx.compose.material3.Text(text = "Стоимость: ${order.price}", style = MaterialTheme.typography.titleLarge,
