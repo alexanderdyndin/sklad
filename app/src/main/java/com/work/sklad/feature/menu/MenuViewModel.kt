@@ -17,7 +17,7 @@ class MenuViewModel @Inject constructor(): BaseViewModel<MenuState, MenuMutator,
     fun init() {
         val id = sharedPreferences.get(UserId, -1)
         viewModelScope.launch {
-            skladDao.searchUser(id).also {
+            skladDao.searchUser(id).collectLatest {
                 it.firstOrNull()?.let {
                     mutateState { setUser(it) }
                 }
@@ -40,6 +40,8 @@ class MenuViewModel @Inject constructor(): BaseViewModel<MenuState, MenuMutator,
     fun navigateSupplier() = action(Supplier)
 
     fun navigateWarehouse() = action(Warehouse)
+
+    fun navigateUsers() = action(Users)
 
     fun logOut(){
         action(Logout)
@@ -70,4 +72,5 @@ sealed class MenuAction {
     object Supplier : MenuAction()
     object Warehouse : MenuAction()
     object Logout : MenuAction()
+    object Users : MenuAction()
 }

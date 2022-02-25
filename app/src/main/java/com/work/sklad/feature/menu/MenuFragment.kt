@@ -68,6 +68,7 @@ class MenuFragment: BaseFragment() {
                     Supplier -> R.id.action_menuFragment_to_supplierFragment2.navigate()
                     Warehouse -> R.id.action_menuFragment_to_warehouseFragment.navigate()
                     Logout -> back()
+                    Users -> R.id.action_menuFragment_to_userFragment.navigate()
                 }
             }
         }

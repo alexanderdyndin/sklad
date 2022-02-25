@@ -46,6 +46,9 @@
         <action
             android:id="@+id/action_menuFragment_to_orderFragment"
             app:destination="@id/orderFragment" />
+        <action
+            android:id="@+id/action_menuFragment_to_userFragment"
+            app:destination="@id/userFragment" />
     </fragment>
     <action android:id="@+id/action_global_menuFragment" app:destination="@id/menuFragment"/>
     <fragment
@@ -205,4 +208,21 @@
             app:argType="com.work.sklad.data.model.Order"
             app:nullable="true" />
     </dialog><action android:id="@+id/action_global_clientFragment" app:destination="@id/clientFragment"/><action android:id="@+id/action_global_supplierFragment2" app:destination="@id/supplierFragment2"/><action android:id="@+id/action_global_orderFragment" app:destination="@id/orderFragment"/><action android:id="@+id/action_global_productTypeFragment" app:destination="@id/productTypeFragment"/><action android:id="@+id/action_global_productFragment" app:destination="@id/productFragment"/><action android:id="@+id/action_global_warehouseFragment" app:destination="@id/warehouseFragment"/><action android:id="@+id/action_global_invoiceComingFragment" app:destination="@id/invoiceComingFragment"/><action android:id="@+id/action_global_invoiceFragment" app:destination="@id/invoiceFragment"/>
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.work.sklad.feature.users.UserFragment"
+        android:label="UserFragment" >
+        <action
+            android:id="@+id/action_userFragment_to_userEditFragment"
+            app:destination="@id/userEditFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/userEditFragment"
+        android:name="com.work.sklad.feature.users.UserEditFragment"
+        android:label="UserEditFragment" >
+        <argument
+            android:name="user"
+            app:argType="com.work.sklad.data.model.User" />
+    </dialog>
+    <action android:id="@+id/action_global_userFragment" app:destination="@id/userFragment" />
 </navigation>

@@ -10,6 +10,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.UserType
 import com.work.sklad.feature.common.compose.views.ButtonView
@@ -64,7 +65,8 @@ fun AuthContent(onLoginClick: Typed3Listener<String, String, Boolean>, registrat
                 password = it.limitedChangeListener(15)
             },
             label = { Text("Пароль") },
-            modifier = Modifier.fillMaxWidth(.8f)
+            modifier = Modifier.fillMaxWidth(.8f),
+            visualTransformation = PasswordVisualTransformation()
         )
         Spacer(modifier = Modifier.padding(5.dp))
         Row(Modifier) {

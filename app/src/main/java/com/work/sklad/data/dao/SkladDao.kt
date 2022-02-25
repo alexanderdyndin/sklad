@@ -16,7 +16,10 @@ interface SkladDao {
     suspend fun searchUser(username: String):List<User>
 
     @Query("select * from User where id = :id")
-    suspend fun searchUser(id: Int): List<User>
+    fun searchUser(id: Int): Flow<List<User>>
+
+    @Query("select * from User")
+    fun getUsers(): Flow<List<User>>
 
     @Query("select * from client")
     fun getClients(): Flow<List<Client>>

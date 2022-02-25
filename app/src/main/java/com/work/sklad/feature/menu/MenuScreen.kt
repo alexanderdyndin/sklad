@@ -1,6 +1,7 @@
 package com.work.sklad.feature.menu
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.User
+import com.work.sklad.data.model.UserType
 import com.work.sklad.feature.common.utils.Listener
 
 @Composable
@@ -29,7 +31,8 @@ fun MenuScreen(viewModel: MenuViewModel) {
         onProductTypeClick = { viewModel.navigateProductType() },
         onSupplierClick = { viewModel.navigateSupplier() },
         onClientClick = { viewModel.navigateClient() },
-        onOrderClick = { viewModel.navigateOrder() }
+        onOrderClick = { viewModel.navigateOrder() },
+        onUserClick = { viewModel.navigateUsers() }
     )
 }
 
@@ -45,6 +48,7 @@ fun MenuContent(
     onSupplierClick: Listener,
     onClientClick: Listener,
     onOrderClick: Listener,
+    onUserClick: Listener,
 ) {
     Column(
         Modifier
@@ -61,7 +65,7 @@ fun MenuContent(
                 SecondCard(onInvoiceClick)
             }
             state.user?.let {
-                UserCard(it)
+                UserCard(it, onUserClick)
             }
         }
         Row(
@@ -133,10 +137,12 @@ fun SecondCard(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun UserCard(
-    user: User
+    user: User,
+    clickListener: Listener
 ) {
     Card(
         modifier = Modifier
+            .clickable(enabled = user.userType == UserType.Admin) { clickListener.invoke() }
             .padding(horizontal = 4.dp, vertical = 4.dp)
             .fillMaxHeight()
             .fillMaxWidth(),
