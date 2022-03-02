@@ -14,7 +14,7 @@ data class OrderWithInvoiceUserClient(
     val invoiceId: Int,
     val price: Double,
     val warehouse: String,
-    val product: String,
+    val product: String?,
     val isCompleted: Boolean,
     val isCreated: Boolean
 ): Serializable {

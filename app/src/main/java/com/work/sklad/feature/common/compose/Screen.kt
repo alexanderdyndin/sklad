@@ -1,17 +1,18 @@
 package com.work.sklad.feature.common.compose
 
 import android.content.Context
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.TextStyle
@@ -99,10 +100,20 @@ fun ComposeSearchScreen(hint: String, text: String, textChange: (String) -> Unit
                 TextField(
                     value = text,
                     onValueChange = textChange,
-                    label = { Text(hint, style = MaterialTheme.typography.caption) },
-                    modifier = Modifier.fillMaxWidth()
+                    label = { Text(
+                        text = hint,
+                        style = TextStyle(
+                            fontFamily = FontFamily.SansSerif,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 20.sp,
+                            color = Color.White
+                        )
+                    ) },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
-        }
+            }
         },
         content = content,
         bottomBar = {
@@ -110,3 +121,4 @@ fun ComposeSearchScreen(hint: String, text: String, textChange: (String) -> Unit
         }
     )
 }
+

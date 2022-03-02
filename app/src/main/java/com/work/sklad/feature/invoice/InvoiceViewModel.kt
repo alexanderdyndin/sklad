@@ -35,7 +35,7 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
                    expirationDate: LocalDate, warehouseId: Int) {
         viewModelScope.launch {
             val warehouse = skladDao.getWarehouse(warehouseId)
-            if (warehouse.getFreePlace() >= count) {
+            if (warehouse.getBusyPlace() >= count) {
                 skladDao.addInvoice(price, count, manufactureDate, expirationDate, warehouseId)
                 closeBottom()
             } else {
