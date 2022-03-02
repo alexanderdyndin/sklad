@@ -15,7 +15,8 @@ data class OrderWithInvoiceUserClient(
     val price: Double,
     val warehouse: String,
     val product: String,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+    val isCreated: Boolean
 ): Serializable {
-    fun toOrder() = Order(id, date, clientId, userId, invoiceId, isCompleted)
+    fun toOrder() = Order(id, date, clientId, userId, invoiceId, isCompleted, isCreated)
 }

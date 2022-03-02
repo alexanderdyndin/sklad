@@ -2,8 +2,11 @@ package com.work.sklad.feature.supplier
 
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.Supplier
+import com.work.sklad.data.model.UserType
+import com.work.sklad.data.model.UserType.*
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
+import com.work.sklad.feature.common.utils.isEmail
 import com.work.sklad.feature.main_activity.ShowMessage
 import com.work.sklad.feature.supplier.SupplierAction.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +26,16 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
     }
 
     fun addSupplier(company: String, email: String, phone: String) {
+        if (!email.isEmail()) {
+            message("Email не валиден")
+            return
+        }
+        state.value.suppliers.forEach {
+            if (it.company == company) {
+                message("Компания с таким именем уже существует")
+                return
+            }
+        }
         viewModelScope.launch {
             skladDao.addSupplier(company, email, phone)
             closeBottom()
@@ -30,6 +43,13 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
     }
 
     fun deleteSupplier(supplier: Supplier) {
+        when (getUserType()) {
+            Admin, WarehouseManager, WarehouseMan -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch {
             try {
                 skladDao.deleteSupplier(supplier)
@@ -42,6 +62,13 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
 
 
     fun updateSupplierRequest(supplier: Supplier) {
+        when (getUserType()) {
+            Admin, WarehouseManager, WarehouseMan -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         openBottom(supplier)
     }
 
@@ -57,6 +84,13 @@ class SupplierViewModel @Inject constructor(): BaseViewModel<SupplierState, Supp
     }
 
     fun openBottom(supplier: Supplier? = null) {
+        when (getUserType()) {
+            Admin, WarehouseManager, WarehouseMan -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         action(OpenBottom(supplier))
     }
 }

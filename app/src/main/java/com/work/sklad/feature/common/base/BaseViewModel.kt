@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.work.sklad.data.dao.SkladDao
+import com.work.sklad.data.model.UserType
 import com.work.sklad.domain.repository.ISharedPreferencesRepository
 import com.work.sklad.feature.common.Events
 import com.work.sklad.feature.common.Screens
+import com.work.sklad.feature.common.UserTypes
 import com.work.sklad.feature.main_activity.OpenPdf
 import com.work.sklad.feature.main_activity.ShowMessage
 import com.work.sklad.feature.main_activity.ShowNavSnackbar
@@ -74,5 +76,13 @@ abstract class BaseViewModel<TState, TMutator : BaseMutator<TState>, TAction>(
 
     protected fun openPdf(html: String) {
         events.send(OpenPdf(html))
+    }
+
+    protected fun getUserType(): UserType {
+        val type = sharedPreferences.get(UserTypes, -1)
+        UserType.values().forEach {
+            if (type == it.ordinal) return it
+        }
+        return UserType.Admin
     }
 }

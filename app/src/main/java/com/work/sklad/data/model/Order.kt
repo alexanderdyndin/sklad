@@ -22,5 +22,6 @@ data class Order(
     val userId: Int,
     @ColumnInfo(name = "invoice_id")
     val invoiceId: Int,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+    val isCreated: Boolean
 ) : Serializable

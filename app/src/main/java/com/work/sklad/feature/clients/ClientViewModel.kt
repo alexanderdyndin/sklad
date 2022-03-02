@@ -3,10 +3,13 @@ package com.work.sklad.feature.clients
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.Client
 import com.work.sklad.data.model.ProductType
+import com.work.sklad.data.model.UserType
+import com.work.sklad.data.model.UserType.*
 import com.work.sklad.domain.model.ClientDiscount
 import com.work.sklad.feature.clients.ClientAction.*
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
+import com.work.sklad.feature.common.utils.isEmail
 import com.work.sklad.feature.login.LoginAction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -25,6 +28,16 @@ class ClientViewModel @Inject constructor(): BaseViewModel<ClientState, ClientMu
     }
 
     fun add(company: String, email: String, phone: String) {
+        if (!email.isEmail()) {
+            message("Email не валиден")
+            return
+        }
+        state.value.clients.forEach {
+            if (it.company == company) {
+                message("Компания с таким именем уже существует")
+                return
+            }
+        }
         viewModelScope.launch {
             skladDao.addClient(company, email, phone)
             closeBottom()
@@ -47,17 +60,26 @@ class ClientViewModel @Inject constructor(): BaseViewModel<ClientState, ClientMu
     }
 
     fun delete(client: ClientDiscount) {
-        viewModelScope.launch {
-            try{
-                skladDao.delete(client.toClient())
-            } catch(e: Throwable) {
+        when (getUserType()) {
+            Admin, WarehouseManager, SalesManager -> {
+                viewModelScope.launch {
+                    try{
+                        skladDao.delete(client.toClient())
+                    } catch(e: Throwable) {
 
+                    }
+                }
             }
+            else -> message("У вас нет прав для этой операции")
         }
+
     }
 
     fun openBottom(client: Client? = null) {
-        action(OpenBottom(client))
+        when (getUserType()) {
+            Admin, WarehouseManager, SalesManager -> action(OpenBottom(client))
+            else -> message("У вас нет прав для этой операции")
+        }
     }
 }
 

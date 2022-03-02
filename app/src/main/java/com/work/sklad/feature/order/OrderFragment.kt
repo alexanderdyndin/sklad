@@ -36,7 +36,7 @@ class OrderFragment: BaseFragment() {
 
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
-            is AddOrderEvent -> viewModel.addInvoice(it.date, it.clientId, it.invoiceId, it.isCompleted)
+            is AddOrderEvent -> viewModel.addInvoice(it.date, it.clientId, it.invoiceId, it.isCompleted, it.isCreated)
         }
     }
 

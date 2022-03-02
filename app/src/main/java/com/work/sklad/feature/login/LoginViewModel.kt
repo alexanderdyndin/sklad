@@ -5,6 +5,7 @@ import com.work.sklad.data.model.UserType
 import com.work.sklad.feature.common.Strings
 import com.work.sklad.feature.common.Strings.EmptyFieldError
 import com.work.sklad.feature.common.UserId
+import com.work.sklad.feature.common.UserTypes
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
 import com.work.sklad.feature.login.LoginAction.*
@@ -38,6 +39,7 @@ class LoginViewModel @Inject constructor(): BaseViewModel<LoginState, LoginMutat
                     val user = it.first()
                     if (rememberUser) {
                         sharedPreferences.set(UserId, user.id)
+                        sharedPreferences.set(UserTypes, user.userType.ordinal)
                     }
                     action(Proceed)
                 } else {

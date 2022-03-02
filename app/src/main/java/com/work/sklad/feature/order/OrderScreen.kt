@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.work.sklad.data.model.Client
@@ -21,6 +22,7 @@ import com.work.sklad.data.model.Order
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
 import com.work.sklad.feature.common.Event
+import com.work.sklad.feature.common.compose.AppTypography
 import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DatePicker
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
@@ -36,13 +38,16 @@ fun OrdersScreen(viewModel: OrderViewModel) {
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         items(state.orders) {
-            WarehouseItem(it, {viewModel.delete(it)}, {viewModel.updateRequest(it)}, onPdf = {viewModel.openPdf(it)}) { checked -> viewModel.update(it.copy(isCompleted = checked)) }
+            WarehouseItem(it, {viewModel.delete(it)}, {viewModel.updateRequest(it)}, onPdf = {viewModel.openPdf(it)},
+                updateChecked = { checked -> viewModel.updateCompleted(it.copy(isCompleted = checked)) }) {
+                    checked -> viewModel.updateCreated(it.copy(isCreated = checked))
+            }
         }
     }
 }
 
 @Composable
-fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdate: Listener, onPdf: Listener, updateChecked: TypedListener<Boolean>) {
+fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdate: Listener, onPdf: Listener, updateChecked: TypedListener<Boolean>, createdChecked: TypedListener<Boolean>) {
     var expanded by remember { mutableStateOf(false) }
     ConstraintLayout(
         Modifier
@@ -74,6 +79,11 @@ fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdat
             Row() {
                 Checkbox(checked = order.isCompleted, onCheckedChange = updateChecked, modifier = Modifier.padding(end = 5.dp))
                 Text(text = "Выполнен")
+            }
+            Spacer(modifier = Modifier.padding(2.dp))
+            Row() {
+                Checkbox(checked = order.isCreated, onCheckedChange = createdChecked, modifier = Modifier.padding(end = 5.dp))
+                Text(text = "Собран")
             }
             DropdownMenu(
                 expanded = expanded,
@@ -115,6 +125,7 @@ fun AddOrderScreen(order: Order?, clients: Array<Client>, invoices: Array<Invoic
         var client by rememberSaveable { mutableStateOf(order?.clientId?.let { clients.find { client -> client.id == it } } ?: clients.first()) }
         var invoice by rememberSaveable { mutableStateOf(order?.invoiceId?.let { invoices.find { invoice -> invoice.id == it } } ?: invoices.first()) }
         var completed by rememberSaveable { mutableStateOf(order?.isCompleted ?: false) }
+        var created by rememberSaveable { mutableStateOf(order?.isCreated ?: false) }
         DatePicker(title = "Дата заказа", date = date1, onDateChange = {date1=it})
         Spinner(name = "Клиент", stateList = clients, initialState = client, nameMapper = {it.company} ) {
             client = it
@@ -122,16 +133,21 @@ fun AddOrderScreen(order: Order?, clients: Array<Client>, invoices: Array<Invoic
         Spinner(name = "Накладная", stateList = invoices, initialState = invoice, nameMapper = {"${it.id} - ${it.product} - ${it.count}"} ) {
             invoice = it
         }
-        Row(Modifier.padding(bottom = 5.dp)) {
-            Checkbox(checked = completed, onCheckedChange = {completed = it}, modifier = Modifier.padding(end = 5.dp))
-            Text(text = "Выполнен", modifier = Modifier)
+        order?.let {
+            Row(Modifier.padding(bottom = 5.dp).fillMaxWidth(0.5f)) {
+                Checkbox(checked = completed, onCheckedChange = {completed = it}, modifier = Modifier.padding(end = 5.dp))
+                Text(text = "Выполнен", color = Color.White)
+            }
+            Row(Modifier.padding(bottom = 5.dp).fillMaxWidth(0.5f)) {
+                Checkbox(checked = created, onCheckedChange = {created = it}, modifier = Modifier.padding(end = 5.dp))
+                Text(text = "Собран", color = Color.White)
+            }
         }
         ButtonView(text = order?.let { "Редактировать" } ?: "Добавить") {
             listener.invoke(order?.let {
                 EditOrderEvent(it.copy(date = date1, clientId = client.id, invoiceId = invoice.id,
                     isCompleted = completed))
-            } ?: AddOrderEvent(date1, client.id, invoice.id, completed))
-
+            } ?: AddOrderEvent(date1, client.id, invoice.id, isCompleted = false, isCreated = false))
         }
     }
 }

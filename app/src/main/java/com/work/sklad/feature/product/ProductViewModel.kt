@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.work.sklad.R
 import com.work.sklad.data.model.Product
 import com.work.sklad.data.model.ProductType
+import com.work.sklad.data.model.UserType
+import com.work.sklad.data.model.UserType.*
 import com.work.sklad.domain.model.ProductWithType
 import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.base.BaseMutator
@@ -27,6 +29,12 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
     }
 
     fun add(name: String, unit: String, typeId: Int) {
+        state.value.products.forEach {
+            if (it.name == name) {
+                message("Товар с таким именем уже существует")
+                return
+            }
+        }
         viewModelScope.launch {
             skladDao.addProduct(name, unit, typeId)
             closeBottom()
@@ -34,7 +42,12 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
     }
 
     fun updateRequest(productWithType: ProductWithType) {
-        openBottom(productWithType.toProduct())
+        when (getUserType()) {
+            Admin, WarehouseManager, WarehouseMan -> openBottom(productWithType.toProduct())
+            else -> {
+                message("У вас нет прав для этой операции")
+            }
+        }
     }
 
     fun update(product: Product) {
@@ -49,6 +62,13 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
     }
 
     fun delete(productWithType: ProductWithType) {
+        when (getUserType()) {
+            Admin, WarehouseManager, WarehouseMan -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch {
             try{
                 skladDao.delete(productWithType.toProduct())
@@ -59,6 +79,13 @@ class ProductViewModel @Inject constructor(): BaseViewModel<ProductState, Produc
     }
 
     fun openBottom(product: Product? = null) {
+        when (getUserType()) {
+            Admin, WarehouseManager, WarehouseMan -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch {
             skladDao.getProductTypes().also {
                 if (it.isEmpty()) {

@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.work.sklad.data.model.UserType
 import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.EditText
+import com.work.sklad.feature.common.compose.views.MaskPhoneTransformation
 import com.work.sklad.feature.common.compose.views.Spinner
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.Typed3Listener
@@ -103,7 +104,7 @@ fun Registration(registration: TypedListener<RegistrationEvent>) {
         EditText(value = name, label = "Имя"){ name = it }
         EditText(value = surname, label = "Фамилия"){ surname = it }
         EditText(value = patronymic, label = "Отчество"){ patronymic = it }
-        EditText(value = phone, label = "Телефон"){ phone = it }
+        EditText(value = phone, label = "Телефон", visualTransformation = MaskPhoneTransformation(), maxChars = 11, onlyDigits = true){ phone = it }
         Spinner(stateList = UserType.values(), initialState = userType, nameMapper = { it.toString() }) {
             userType = it
         }

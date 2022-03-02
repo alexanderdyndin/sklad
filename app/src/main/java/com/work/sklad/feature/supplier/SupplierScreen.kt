@@ -15,6 +15,7 @@ import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
+import com.work.sklad.feature.common.compose.views.MaskPhoneTransformation
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
 
@@ -61,7 +62,7 @@ fun AddSupplierScreen(supplier: Supplier?, listener: TypedListener<Event>) {
         var phone by rememberSaveable { mutableStateOf(supplier?.phone.orEmpty()) }
         EditText(value = company, label = "Компания"){ company = it }
         EditText(value = email, label = "Email"){ email = it }
-        EditText(value = phone, label = "Телефон"){ phone = it }
+        EditText(value = phone, label = "Телефон", visualTransformation = MaskPhoneTransformation(), maxChars = 11, onlyDigits = true){ phone = it }
         ButtonView(text = supplier?.let { "Редактировать" } ?: "Добавить") {
             listener.invoke(supplier?.let { EditSupplierEvent(it.copy(company = company, email = email,
                 phone = phone)) } ?: AddSupplierEvent(company, email, phone))

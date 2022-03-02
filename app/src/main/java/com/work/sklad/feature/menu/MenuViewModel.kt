@@ -2,6 +2,8 @@ package com.work.sklad.feature.menu
 
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.User
+import com.work.sklad.data.model.UserType
+import com.work.sklad.data.model.UserType.*
 import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
@@ -25,23 +27,47 @@ class MenuViewModel @Inject constructor(): BaseViewModel<MenuState, MenuMutator,
         }
     }
 
-    fun navigateClient() = action(Client)
+    fun navigateClient() {
+        when (state.value.user?.userType) {
+            WarehouseMan, Picker -> message("У вас нет прав для просмотра этой категории")
+            else -> action(Client)
+        }
+    }
 
-    fun navigateInvoice() = action(Invoice)
+    fun navigateInvoice() {
+        action(Invoice)
+    }
 
-    fun navigateInvoiceComing() = action(InvoiceComing)
+    fun navigateInvoiceComing() {
+        action(InvoiceComing)
+    }
 
-    fun navigateOrder() = action(Order)
+    fun navigateOrder() {
+        action(Order)
+    }
 
-    fun navigateProduct() = action(Product)
+    fun navigateProduct() {
+        action(Product)
+    }
 
-    fun navigateProductType() = action(ProductType)
+    fun navigateProductType() {
+        action(ProductType)
+    }
 
-    fun navigateSupplier() = action(Supplier)
+    fun navigateSupplier() {
+        when (state.value.user?.userType) {
+            SalesManager, WarehouseManager, Admin -> action(Supplier)
+            else -> message("У вас нет прав для просмотра этой категории")
+        }
+    }
 
-    fun navigateWarehouse() = action(Warehouse)
+    fun navigateWarehouse() {
+        action(Warehouse)
+    }
 
-    fun navigateUsers() = action(Users)
+    fun navigateUsers() {
+        action(Users)
+    }
 
     fun logOut(){
         action(Logout)

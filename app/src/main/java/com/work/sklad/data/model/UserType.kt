@@ -6,7 +6,7 @@ enum class UserType {
     override fun toString(): String {
         return when(this) {
             SalesManager -> "Менеджер по продажам"
-            WarehouseMan -> "Работник склада"
+            WarehouseMan -> "Кладовщик"
             Picker -> "Сборщик"
             WarehouseManager -> "Директор склада"
             Admin -> "Администратор"

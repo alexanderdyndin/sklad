@@ -2,10 +2,8 @@ package com.work.sklad.feature.order
 
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.R
-import com.work.sklad.data.model.Client
-import com.work.sklad.data.model.Order
-import com.work.sklad.data.model.Supplier
-import com.work.sklad.data.model.User
+import com.work.sklad.data.model.*
+import com.work.sklad.data.model.UserType.*
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
 import com.work.sklad.domain.model.ProductWithType
@@ -29,10 +27,10 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
         viewModelScope.launch { skladDao.getOrders().collectLatest { mutateState { setInvoices(it) } } }
     }
 
-    fun addInvoice(date: LocalDate, clientId: Int, invoiceId: Int, isCompleted: Boolean) {
+    fun addInvoice(date: LocalDate, clientId: Int, invoiceId: Int, isCompleted: Boolean, isCreated: Boolean) {
         viewModelScope.launch {
             val discount = skladDao.clientHasDiscount(clientId)
-            skladDao.addOrder(date, clientId, sharedPreferences.get(UserId, -1), invoiceId, isCompleted)
+            skladDao.addOrder(date, clientId, sharedPreferences.get(UserId, -1), invoiceId, isCompleted, isCreated)
             if (discount) {
                 skladDao.setInvoiceDiscount(invoiceId)
                 message("Была добавлена скидка постоянного покупателя 5%")
@@ -55,7 +53,24 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
     }
 
     fun update(order: OrderWithInvoiceUserClient) {
-        update(order.toOrder())
+        when (getUserType()) {
+            Admin, WarehouseManager, SalesManager -> update(order.toOrder())
+            else -> { message("У вас нет прав для этой операции") }
+        }
+    }
+
+    fun updateCompleted(order: OrderWithInvoiceUserClient) {
+        when (getUserType()) {
+            Admin, WarehouseManager -> update(order.toOrder())
+            else -> { message("У вас нет прав для этой операции") }
+        }
+    }
+
+    fun updateCreated(order: OrderWithInvoiceUserClient) {
+        when (getUserType()) {
+            Admin, WarehouseManager, Picker -> update(order.toOrder())
+            else -> { message("У вас нет прав для этой операции") }
+        }
     }
 
     fun update(order: Order) {
@@ -70,6 +85,13 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
     }
 
     fun delete(productWithType: OrderWithInvoiceUserClient) {
+        when (getUserType()) {
+            Admin, WarehouseManager -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch {
             try{
                 skladDao.delete(productWithType.toOrder())
@@ -80,6 +102,13 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
     }
 
     fun openBottom(order: Order? = null) {
+        when (getUserType()) {
+            Admin, WarehouseManager, SalesManager -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val clients = skladDao.getClientList()
             val invoices = skladDao.getFreeInvoices()

@@ -25,5 +25,5 @@ class OrderAddFragment: BaseBottomSheet() {
 
 }
 
-data class AddOrderEvent(val date: LocalDate, val clientId: Int, val invoiceId: Int, val isCompleted: Boolean): Event
+data class AddOrderEvent(val date: LocalDate, val clientId: Int, val invoiceId: Int, val isCompleted: Boolean, val isCreated: Boolean): Event
 data class EditOrderEvent(val order: Order): Event

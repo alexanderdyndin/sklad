@@ -3,6 +3,7 @@ package com.work.sklad.feature.users
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.data.model.User
 import com.work.sklad.data.model.UserType
+import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
 import com.work.sklad.feature.main_activity.ShowMessage
@@ -31,6 +32,11 @@ class UserViewModel @Inject constructor(): BaseViewModel<UserState, UserMutator,
     }
 
     fun deleteUser(User: User) {
+        val id = sharedPreferences.get(UserId, -1)
+        if (User.id == id) {
+            message("Вы не можете удалить самого себя")
+            return
+        }
         viewModelScope.launch {
             try {
                 skladDao.delete(User)

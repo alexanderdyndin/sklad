@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.work.sklad.R
 import com.work.sklad.data.model.InvoiceComing
 import com.work.sklad.data.model.Supplier
+import com.work.sklad.data.model.UserType
+import com.work.sklad.data.model.UserType.*
 import com.work.sklad.domain.model.InvoiceComingWithWarehouseSupplier
 import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.base.BaseMutator
@@ -50,7 +52,10 @@ class InvoiceComingViewModel @Inject constructor(): BaseViewModel<InvoiceComingS
     }
 
     fun updateRequest(invoice: InvoiceComingWithWarehouseSupplier) {
-        openBottom(invoice.toInvoiceComing())
+        when (getUserType()) {
+            Admin, WarehouseManager -> openBottom(invoice.toInvoiceComing())
+            else -> message("У вас нет прав для этой операции")
+        }
     }
 
     fun update(invoice: InvoiceComing) {
@@ -65,8 +70,15 @@ class InvoiceComingViewModel @Inject constructor(): BaseViewModel<InvoiceComingS
     }
 
     fun delete(invoice: InvoiceComingWithWarehouseSupplier) {
+        when (getUserType()) {
+            Admin, WarehouseManager -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch {
-            try{
+            try {
                 skladDao.delete(invoice.toInvoiceComing())
             } catch(e: Throwable) {
 
@@ -75,6 +87,13 @@ class InvoiceComingViewModel @Inject constructor(): BaseViewModel<InvoiceComingS
     }
 
     fun openBottom(invoiceComing: InvoiceComing? = null) {
+        when (getUserType()) {
+            Admin, WarehouseManager, WarehouseMan -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val warehouses = skladDao.getWarehouseWithProductList()
             val suppliers = skladDao.getSuppliersList()

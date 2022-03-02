@@ -72,10 +72,10 @@ interface SkladDao {
     @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.price, invoice.count, invoice.manufactureDate, invoice.expirationDate, product.unit from invoice inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id LEFT OUTER JOIN `order` on `order`.invoice_id = invoice.id where `order`.invoice_id is NULL")
     suspend fun getFreeInvoices(): List<InvoiceWithWarehouse>
 
-    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user, invoice.id as invoiceId, invoice.price, warehouse.name as warehouse, product.name as product, `order`.isCompleted from `order` inner join invoice on invoice.id = `order`.invoice_id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id")
+    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user, invoice.id as invoiceId, invoice.price, warehouse.name as warehouse, product.name as product, `order`.isCompleted, `order`.isCreated from `order` inner join invoice on invoice.id = `order`.invoice_id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id")
     fun getOrders(): Flow<List<OrderWithInvoiceUserClient>>
 
-    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user, invoice.id as invoiceId, invoice.price, warehouse.name as warehouse, product.name as product, `order`.isCompleted from `order` inner join invoice on invoice.id = `order`.invoice_id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id where `order`.invoice_id = :invoiceId")
+    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user, invoice.id as invoiceId, invoice.price, warehouse.name as warehouse, product.name as product, `order`.isCompleted, `order`.isCreated from `order` inner join invoice on invoice.id = `order`.invoice_id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id where `order`.invoice_id = :invoiceId")
     suspend fun getOrder(invoiceId: Int): List<OrderWithInvoiceUserClient>
 
     @Query("select * from product")
@@ -107,8 +107,8 @@ interface SkladDao {
     suspend fun addInvoice(price: Double, count: Int, manufactureDate: LocalDate,
                                  expirationDate: LocalDate, warehouseId: Int)
 
-    @Query("insert into `order`(date, client_id, user_id, invoice_id, isCompleted) values (:date, :clientId, :userId, :invoiceId, :isCompleted)")
-    suspend fun addOrder(date: LocalDate, clientId: Int, userId: Int, invoiceId: Int, isCompleted: Boolean)
+    @Query("insert into `order`(date, client_id, user_id, invoice_id, isCompleted, isCreated) values (:date, :clientId, :userId, :invoiceId, :isCompleted, :isCreated)")
+    suspend fun addOrder(date: LocalDate, clientId: Int, userId: Int, invoiceId: Int, isCompleted: Boolean, isCreated: Boolean)
 
     @Query("insert into product(name, unit, product_type_id) values (:name, :unit, :typeId)")
     suspend fun addProduct(name: String, unit: String, typeId: Int)

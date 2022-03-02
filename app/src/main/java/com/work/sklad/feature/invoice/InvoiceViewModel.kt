@@ -3,6 +3,8 @@ package com.work.sklad.feature.invoice
 import androidx.lifecycle.viewModelScope
 import com.work.sklad.R
 import com.work.sklad.data.model.Invoice
+import com.work.sklad.data.model.UserType
+import com.work.sklad.data.model.UserType.*
 import com.work.sklad.domain.model.InvoiceComingWithWarehouseSupplier
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
@@ -43,7 +45,10 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
     }
 
     fun updateRequest(invoice: InvoiceWithWarehouse) {
-        openBottom(invoice.toInvoice())
+        when (getUserType()) {
+            Admin, WarehouseManager -> openBottom(invoice.toInvoice())
+            else -> message("У вас нет прав для этой операции")
+        }
     }
 
     fun update(invoice: Invoice) {
@@ -58,6 +63,13 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
     }
 
     fun delete(invoice: InvoiceWithWarehouse) {
+        when (getUserType()) {
+            Admin, WarehouseManager -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch {
             try{
                 skladDao.delete(invoice.toInvoice())
@@ -68,6 +80,13 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
     }
 
     fun openBottom(invoice: Invoice? = null) {
+        when (getUserType()) {
+            Admin, WarehouseManager, WarehouseMan -> {}
+            else -> {
+                message("У вас нет прав для этой операции")
+                return
+            }
+        }
         viewModelScope.launch(Dispatchers.IO) {
             val warehouses = skladDao.getWarehouseWithProductList()
             when {

@@ -18,6 +18,7 @@ import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
 import com.work.sklad.feature.common.compose.views.EditText
+import com.work.sklad.feature.common.compose.views.MaskPhoneTransformation
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
 
@@ -67,7 +68,7 @@ fun AddClientScreen(clientEntity: Client?, client: TypedListener<Event>) {
         var phone by rememberSaveable { mutableStateOf(clientEntity?.phone.orEmpty()) }
         EditText(value = company, label = "Компания"){ company = it }
         EditText(value = email, label = "Email"){ email = it }
-        EditText(value = phone, label = "Телефон"){ phone = it }
+        EditText(value = phone, label = "Телефон", visualTransformation = MaskPhoneTransformation(), maxChars = 11, onlyDigits = true){ phone = it }
         ButtonView(text = clientEntity?.let { "Редактировать" } ?: "Добавить") {
             client.invoke(clientEntity?.let {
                 EditClientEvent(it.copy(company = company, email = email, phone = phone))
