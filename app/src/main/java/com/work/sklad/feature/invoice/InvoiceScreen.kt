@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.work.sklad.data.model.Invoice
 import com.work.sklad.domain.model.InvoiceWithWarehouse
+import com.work.sklad.domain.model.OrderWithInvoiceUserClient
 import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.compose.views.*
@@ -94,30 +95,25 @@ fun InvoiceItem(order: InvoiceWithWarehouse, onDelete: Listener, onUpdate: Liste
 }
 
 @Composable
-fun AddInvoiceScreen(invoice: Invoice?, warehouses: Array<WarehouseWithProduct>, listener: TypedListener<Event>) {
+fun AddInvoiceScreen(invoice: Invoice?, warehouses: Array<OrderWithInvoiceUserClient>, listener: TypedListener<Event>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth()
     ) {
-        var count by rememberSaveable { mutableStateOf(invoice?.count?.toString() ?: "0") }
-        var price by rememberSaveable { mutableStateOf(invoice?.price?.toString() ?: "0.0") }
         var date1 by remember { mutableStateOf(invoice?.manufactureDate ?: LocalDate.now()) }
         var date2 by remember { mutableStateOf(invoice?.expirationDate ?: LocalDate.now()) }
-        var warehouse by rememberSaveable { mutableStateOf(invoice?.warehouseId?.let { warehouses.find { warehouse -> warehouse.id == it } } ?: warehouses.first()) }
-        EditText(value = count, label = "Количество", keyboardType = KeyboardType.Number){ count = it }
-        EditText(value = price, label = "Цена", keyboardType = KeyboardType.Number){ price = it }
+        var order by rememberSaveable { mutableStateOf(invoice?.orderId?.let { warehouses.find { warehouse -> warehouse.id == it } } ?: warehouses.first()) }
         DatePicker(title = "Изготовлено", date = date1, onDateChange = {date1=it})
         DatePicker(title = "Годен до", date = date2, onDateChange = {date2=it})
-        Spinner(name = "Склад", stateList = warehouses, initialState = warehouse, nameMapper = {"${it.name} - ${it.product} -  ${it.getBusyPlace()} ${it.unit}"} ) {
-            warehouse = it
+        Spinner(name = "Заказ", stateList = warehouses, initialState = order, nameMapper = {"${it.client} - ${it.product} - ${it.count}"} ) {
+            order = it
         }
         ButtonView(text = invoice?.let { "Редактировать" } ?: "Добавить") {
             try {
-                listener.invoke(invoice?.let { EditInvoiceEvent(it.copy(count = count.toInt(),
-                    price = price.toDouble(), manufactureDate = date1, expirationDate = date2, warehouseId = warehouse.id)) }
-                    ?: AddInvoiceEvent(price.toDouble(),count.toInt(),date1, date2, warehouse.id))
+                listener.invoke(invoice?.let { EditInvoiceEvent(it.copy(manufactureDate = date1, expirationDate = date2, orderId = order.id)) }
+                    ?: AddInvoiceEvent(date1, date2, order.id))
             } catch(e: Throwable) {
                 if (e is NumberFormatException) listener.invoke(ShowMessage("Неверный формат цены или количества"))
             }

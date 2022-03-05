@@ -31,22 +31,24 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
         }
     }
 
-    fun addInvoice(price: Double, count: Int, manufactureDate: LocalDate,
-                   expirationDate: LocalDate, warehouseId: Int) {
+    fun addInvoice(manufactureDate: LocalDate, expirationDate: LocalDate, orderId: Int) {
         viewModelScope.launch {
-            val warehouse = skladDao.getWarehouse(warehouseId)
-            if (warehouse.getBusyPlace() >= count) {
-                skladDao.addInvoice(price, count, manufactureDate, expirationDate, warehouseId)
-                closeBottom()
-            } else {
-                message("Нельзя отгрузить товара больше, чем его количество на складе")
-            }
+            skladDao.addInvoice(manufactureDate, expirationDate, orderId)
+            closeBottom()
         }
     }
 
     fun updateRequest(invoice: InvoiceWithWarehouse) {
         when (getUserType()) {
-            Admin, WarehouseManager -> openBottom(invoice.toInvoice())
+            Admin, WarehouseManager -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val orders = skladDao.getFreeOrders().plus(skladDao.getOrder(invoice.warehouseId!!))
+                    when {
+                        orders.isEmpty() -> message("Добавьте хотя бы один заказ", R.id.action_global_orderFragment)
+                        else -> action(OpenBottom(orders, invoice.toInvoice()))
+                    }
+                }
+            }
             else -> message("У вас нет прав для этой операции")
         }
     }
@@ -88,17 +90,17 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            val warehouses = skladDao.getWarehouseWithProductList()
+            val orders = skladDao.getFreeOrders()
             when {
-                warehouses.isEmpty() -> message("Добавьте хотя бы один склад", R.id.action_global_warehouseFragment)
-                else -> action(OpenBottom(warehouses, invoice))
+                orders.isEmpty() -> message("Добавьте хотя бы один заказ", R.id.action_global_orderFragment)
+                else -> action(OpenBottom(orders, invoice))
             }
         }
     }
 
     fun openPdf(invoice: InvoiceWithWarehouse) {
         viewModelScope.launch {
-            skladDao.getOrder(invoice.id).firstOrNull()?.let { openPdf(createHtml(it, invoice)) } ?: let {
+            skladDao.getOrder(invoice.orderId ?: -1).firstOrNull()?.let { openPdf(createHtml(it, invoice)) } ?: let {
                 this@InvoiceViewModel.message("Накладная не связана с заказом")
             }
         }
@@ -124,7 +126,7 @@ class InvoiceViewModel @Inject constructor(): BaseViewModel<InvoiceState, Invoic
                 "<p>г. Москва, ул. 7-ая Парковая, д. 9/26</p>\n" +
                 "<p>т. 8 (768) 561-32-43</p>\n" +
                 "<p>Дата ${order.date}</p>\n" +
-                "<p style=\"text-align:center;font-family:Georgia, serif;font-size:14px;font-style:normal;font-weight:normal;color:#000000;background-color:#ffffff;\">Накладная расхода № ${order.invoiceId}</p>\n" +
+                "<p style=\"text-align:center;font-family:Georgia, serif;font-size:14px;font-style:normal;font-weight:normal;color:#000000;background-color:#ffffff;\">Накладная расхода № ${invoice.id}</p>\n" +
                 "<style>\n" +
                 "table.GeneratedTable {\n" +
                 "  width: 100%;\n" +
@@ -193,5 +195,5 @@ class InvoiceMutator: BaseMutator<InvoiceState>() {
 }
 
 sealed class InvoiceAction {
-    data class OpenBottom(val warehouses: List<WarehouseWithProduct>, val invoice: Invoice?) : InvoiceAction()
+    data class OpenBottom(val orders: List<OrderWithInvoiceUserClient>, val invoice: Invoice?) : InvoiceAction()
 }

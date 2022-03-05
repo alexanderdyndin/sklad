@@ -19,11 +19,11 @@ class OrderAddFragment: BaseBottomSheet() {
         AddOrderScreen(
             requireArguments().getSerializable("order") as? Order,
             requireArguments().getSerializable("clients") as Array<Client>,
-            requireArguments().getSerializable("invoices") as Array<InvoiceWithWarehouse>,
+            requireArguments().getSerializable("warehouses") as Array<WarehouseWithProduct>,
         ) { events.send(it) }
     }
 
 }
 
-data class AddOrderEvent(val date: LocalDate, val clientId: Int, val invoiceId: Int, val isCompleted: Boolean, val isCreated: Boolean): Event
+data class AddOrderEvent(val date: LocalDate, val clientId: Int, val warehouseId: Int, val price: Double, val count: Int, val isCompleted: Boolean, val isCreated: Boolean): Event
 data class EditOrderEvent(val order: Order): Event

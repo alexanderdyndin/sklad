@@ -178,8 +178,8 @@
         android:name="com.work.sklad.feature.invoice.InvoiceAddFragment"
         android:label="InvoiceAddFragment" >
         <argument
-            android:name="warehouses"
-            app:argType="com.work.sklad.domain.model.WarehouseWithProduct[]" />
+            android:name="orders"
+            app:argType="com.work.sklad.domain.model.OrderWithInvoiceUserClient[]" />
         <argument
             android:name="invoice"
             app:argType="com.work.sklad.data.model.Invoice"
@@ -198,8 +198,8 @@
         android:name="com.work.sklad.feature.order.OrderAddFragment"
         android:label="OrderAddFragment" >
         <argument
-            android:name="invoices"
-            app:argType="com.work.sklad.domain.model.InvoiceWithWarehouse[]" />
+            android:name="warehouses"
+            app:argType="com.work.sklad.domain.model.WarehouseWithProduct[]" />
         <argument
             android:name="clients"
             app:argType="com.work.sklad.data.model.Client[]" />

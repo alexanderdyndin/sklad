@@ -48,35 +48,38 @@ interface SkladDao {
     @Query("select * from product_type")
     suspend fun getProductTypes(): List<ProductType>
 
-    @Query("select product.id, product.name, product.unit, product.product_type_id as typeId, product_type.type, (select sum(invoice_coming.count) from invoice_coming inner join warehouse on invoice_coming.warehouse_id = warehouse.id where warehouse.product_id = product.id) as came, (select sum(invoice.count) from invoice inner join warehouse on invoice.warehouse_id = warehouse.id where warehouse.product_id = product.id) as `left` from product inner join product_type on product_type.id = product.product_type_id")
+    @Query("select product.id, product.name, product.unit, product.product_type_id as typeId, product_type.type, (select sum(invoice_coming.count) from invoice_coming inner join warehouse on invoice_coming.warehouse_id = warehouse.id where warehouse.product_id = product.id) as came, (select sum(`order`.count) from `order` inner join warehouse on `order`.warehouse_id = warehouse.id where warehouse.product_id = product.id) as `left` from product inner join product_type on product_type.id = product.product_type_id")
     fun getProductWithType(): Flow<List<ProductWithType>>
 
-    @Query("select warehouse.id, warehouse.name, warehouse.free_place as place, (select sum(invoice_coming.count) from invoice_coming where invoice_coming.warehouse_id = warehouse.id) as [invoiceIn], (select sum(invoice.count) from invoice where invoice.warehouse_id = warehouse.id) as invoiceOut, product.id as productId, product.name as [product], product_type.type, product.unit from product inner join product_type on product_type.id = product.product_type_id inner join warehouse on warehouse.product_id = product.id")
+    @Query("select warehouse.id, warehouse.name, warehouse.free_place as place, (select sum(invoice_coming.count) from invoice_coming where invoice_coming.warehouse_id = warehouse.id) as [invoiceIn], (select sum(`order`.count) from `order` where `order`.warehouse_id = warehouse.id) as invoiceOut, product.id as productId, product.name as [product], product_type.type, product.unit from product inner join product_type on product_type.id = product.product_type_id inner join warehouse on warehouse.product_id = product.id")
     fun getWarehouseWithProduct(): Flow<List<WarehouseWithProduct>>
 
-    @Query("select warehouse.id, warehouse.name, warehouse.free_place as place, (select sum(invoice_coming.count) from invoice_coming where invoice_coming.warehouse_id = warehouse.id) as [invoiceIn], (select sum(invoice.count) from invoice where invoice.warehouse_id = warehouse.id) as invoiceOut, product.id as productId, product.name as [product], product_type.type, product.unit from product inner join product_type on product_type.id = product.product_type_id inner join warehouse on warehouse.product_id = product.id where warehouse.id = :id")
+    @Query("select warehouse.id, warehouse.name, warehouse.free_place as place, (select sum(invoice_coming.count) from invoice_coming where invoice_coming.warehouse_id = warehouse.id) as [invoiceIn], (select sum(`order`.count) from `order` where `order`.warehouse_id = warehouse.id) as invoiceOut, product.id as productId, product.name as [product], product_type.type, product.unit from product inner join product_type on product_type.id = product.product_type_id inner join warehouse on warehouse.product_id = product.id where warehouse.id = :id")
     suspend fun getWarehouse(id: Int): WarehouseWithProduct
 
-    @Query("select warehouse.id, warehouse.name, warehouse.free_place as place, (select sum(invoice_coming.count) from invoice_coming where invoice_coming.warehouse_id = warehouse.id) as [invoiceIn], (select sum(invoice.count) from invoice where invoice.warehouse_id = warehouse.id) as invoiceOut, product.id as productId, product.name as [product], product_type.type, product.unit from product inner join product_type on product_type.id = product.product_type_id inner join warehouse on warehouse.product_id = product.id")
+    @Query("select warehouse.id, warehouse.name, warehouse.free_place as place, (select sum(invoice_coming.count) from invoice_coming where invoice_coming.warehouse_id = warehouse.id) as [invoiceIn], (select sum(`order`.count) from `order` where `order`.warehouse_id = warehouse.id) as invoiceOut, product.id as productId, product.name as [product], product_type.type, product.unit from product inner join product_type on product_type.id = product.product_type_id inner join warehouse on warehouse.product_id = product.id")
     suspend fun getWarehouseWithProductList(): List<WarehouseWithProduct>
 
     @Query("select invoice_coming.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice_coming.price, invoice_coming.count, invoice_coming.manufactureDate, invoice_coming.expirationDate, supplier.id as supplierId, supplier.company, product.unit from invoice_coming inner join warehouse on invoice_coming.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id inner join supplier on invoice_coming.supplier_id = supplier.id")
     fun getInvoiceComing(): Flow<List<InvoiceComingWithWarehouseSupplier>>
 
-    @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.price, invoice.count, invoice.manufactureDate, invoice.expirationDate, product.unit from invoice inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id")
+    @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.order_id as orderId, `order`.price, `order`.count, invoice.manufactureDate, invoice.expirationDate, product.unit from invoice left join `order` on invoice.order_id=`order`.id  left join warehouse on `order`.warehouse_id = warehouse.id left join product on warehouse.product_id = product.id")
     fun getInvoice(): Flow<List<InvoiceWithWarehouse>>
 
-    @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.price, invoice.count, invoice.manufactureDate, invoice.expirationDate, product.unit from invoice inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id where invoice.id = :id")
+    @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.order_id as orderId, `order`.price, `order`.count, invoice.manufactureDate, invoice.expirationDate, product.unit from invoice left join `order` on invoice.order_id=`order`.id  left join warehouse on `order`.warehouse_id = warehouse.id left join product on warehouse.product_id = product.id where invoice.id = :id")
     suspend fun getInvoice(id: Int): List<InvoiceWithWarehouse>
 
-    @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.price, invoice.count, invoice.manufactureDate, invoice.expirationDate, product.unit from invoice inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id LEFT OUTER JOIN `order` on `order`.invoice_id = invoice.id where `order`.invoice_id is NULL")
-    suspend fun getFreeInvoices(): List<InvoiceWithWarehouse>
+    @Query("select invoice.id, product.name as [product], warehouse.id as warehouseId, warehouse.name as [warehouse], invoice.order_id as orderId, `order`.price, `order`.count, invoice.manufactureDate, invoice.expirationDate, product.unit from invoice inner join `order` on invoice.order_id=`order`.id  inner join warehouse on `order`.warehouse_id = warehouse.id inner join product on warehouse.product_id = product.id where `order`.id = :id")
+    suspend fun getInvoiceByOrder(id: Int): List<InvoiceWithWarehouse>
 
-    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user, invoice.id as invoiceId, invoice.price, warehouse.name as warehouse, product.name as product, `order`.isCompleted, `order`.isCreated from `order` inner join invoice on invoice.id = `order`.invoice_id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id")
+    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user,  `order`.price, `order`.count, `order`.warehouse_id as warehouseId, warehouse.name as warehouse, product.name as product, `order`.isCompleted, `order`.isCreated from `order` LEFT JOIN invoice on invoice.order_id = `order`.id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on `order`.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id where invoice.order_id is NULL")
+    suspend fun getFreeOrders(): List<OrderWithInvoiceUserClient>
+
+    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user,  `order`.price, `order`.count, `order`.warehouse_id as warehouseId, warehouse.name as warehouse, product.name as product, `order`.isCompleted, `order`.isCreated from `order` LEFT JOIN invoice on invoice.order_id = `order`.id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on `order`.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id")
     fun getOrders(): Flow<List<OrderWithInvoiceUserClient>>
 
-    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user, invoice.id as invoiceId, invoice.price, warehouse.name as warehouse, product.name as product, `order`.isCompleted, `order`.isCreated from `order` inner join invoice on invoice.id = `order`.invoice_id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on invoice.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id where `order`.invoice_id = :invoiceId")
-    suspend fun getOrder(invoiceId: Int): List<OrderWithInvoiceUserClient>
+    @Query("select `order`.id, `order`.date, client.id as clientId, client.company as client, user.id as userId, user.username as user,  `order`.price, `order`.count, `order`.warehouse_id as warehouseId, warehouse.name as warehouse, product.name as product, `order`.isCompleted, `order`.isCreated from `order` LEFT JOIN invoice on invoice.order_id = `order`.id inner join client on `order`.client_id = client.id inner join user on user.id = `order`.user_id inner join warehouse on `order`.warehouse_id = warehouse.id inner join product on product.id = warehouse.product_id where `order`.id = :orderId")
+    suspend fun getOrder(orderId: Int): List<OrderWithInvoiceUserClient>
 
     @Query("select * from product")
     fun getProducts(): Flow<List<Product>>
@@ -103,12 +106,11 @@ interface SkladDao {
     suspend fun addInvoiceComing(price: Double, count: Int, manufactureDate: LocalDate,
                                  expirationDate: LocalDate, warehouseId: Int, supplierId: Int)
 
-    @Query("insert into invoice(price, count, manufactureDate, expirationDate, warehouse_id) values (:price, :count, :manufactureDate, :expirationDate, :warehouseId)")
-    suspend fun addInvoice(price: Double, count: Int, manufactureDate: LocalDate,
-                                 expirationDate: LocalDate, warehouseId: Int)
+    @Query("insert into invoice(manufactureDate, expirationDate, order_id) values (:manufactureDate, :expirationDate, :orderId)")
+    suspend fun addInvoice(manufactureDate: LocalDate, expirationDate: LocalDate, orderId: Int)
 
-    @Query("insert into `order`(date, client_id, user_id, invoice_id, isCompleted, isCreated) values (:date, :clientId, :userId, :invoiceId, :isCompleted, :isCreated)")
-    suspend fun addOrder(date: LocalDate, clientId: Int, userId: Int, invoiceId: Int, isCompleted: Boolean, isCreated: Boolean)
+    @Query("insert into `order`(date, client_id, user_id, warehouse_id, isCompleted, isCreated, price, count) values (:date, :clientId, :userId, :warehouseId, :isCompleted, :isCreated, :price, :count)")
+    suspend fun addOrder(date: LocalDate, clientId: Int, userId: Int, warehouseId: Int, isCompleted: Boolean, isCreated: Boolean, price: Double, count: Int)
 
     @Query("insert into product(name, unit, product_type_id) values (:name, :unit, :typeId)")
     suspend fun addProduct(name: String, unit: String, typeId: Int)
@@ -131,8 +133,8 @@ interface SkladDao {
     @Update
     suspend fun update(item: Invoice)
 
-    @Query("UPDATE Invoice SET price = price*0.95 where id = :id;")
-    suspend fun setInvoiceDiscount(id: Int)
+    @Query("UPDATE `Order` SET price = price*0.95 where id = :id;")
+    suspend fun setOrderDiscount(id: Int)
 
     @Delete
     suspend fun delete(item: InvoiceComing)

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import com.work.sklad.data.model.Invoice
 import com.work.sklad.data.model.ProductType
 import com.work.sklad.data.model.Supplier
+import com.work.sklad.domain.model.OrderWithInvoiceUserClient
 import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.Event
 import com.work.sklad.feature.common.base.BaseBottomSheet
@@ -16,12 +17,11 @@ class InvoiceAddFragment: BaseBottomSheet() {
     override val composable: @Composable (() -> Unit) = {
         AddInvoiceScreen(
             requireArguments().getSerializable("invoice") as? Invoice,
-            requireArguments().getSerializable("warehouses") as Array<WarehouseWithProduct>
+            requireArguments().getSerializable("orders") as Array<OrderWithInvoiceUserClient>
         ) { events.send(it) }
     }
 
 }
 
-data class AddInvoiceEvent(val price: Double, val count: Int, val manufactureDate: LocalDate,
-                                 val expirationDate: LocalDate, val warehouseId: Int): Event
+data class AddInvoiceEvent(val manufactureDate: LocalDate, val expirationDate: LocalDate, val orderId: Int): Event
 data class EditInvoiceEvent(val invoice: Invoice): Event

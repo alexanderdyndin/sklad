@@ -11,12 +11,13 @@ data class OrderWithInvoiceUserClient(
     val client: String,
     val userId: Int,
     val user: String,
-    val invoiceId: Int,
     val price: Double,
+    val count: Int,
+    val warehouseId: Int,
     val warehouse: String,
-    val product: String?,
+    val product: String,
     val isCompleted: Boolean,
     val isCreated: Boolean
 ): Serializable {
-    fun toOrder() = Order(id, date, clientId, userId, invoiceId, isCompleted, isCreated)
+    fun toOrder() = Order(id, date, clientId, userId, isCompleted, isCreated, price, count, warehouseId)
 }

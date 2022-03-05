@@ -11,6 +11,7 @@ import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.UserId
 import com.work.sklad.feature.common.base.BaseMutator
 import com.work.sklad.feature.common.base.BaseViewModel
+import com.work.sklad.feature.common.utils.isNotNull
 import com.work.sklad.feature.main_activity.ShowMessage
 import com.work.sklad.feature.order.OrderAction.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,13 +28,22 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
         viewModelScope.launch { skladDao.getOrders().collectLatest { mutateState { setInvoices(it) } } }
     }
 
-    fun addInvoice(date: LocalDate, clientId: Int, invoiceId: Int, isCompleted: Boolean, isCreated: Boolean) {
+    fun addInvoice(date: LocalDate, clientId: Int, isCompleted: Boolean, isCreated: Boolean, warehouseId: Int, price: Double, count: Int) {
         viewModelScope.launch {
-            val discount = skladDao.clientHasDiscount(clientId)
-            skladDao.addOrder(date, clientId, sharedPreferences.get(UserId, -1), invoiceId, isCompleted, isCreated)
-            if (discount) {
-                skladDao.setInvoiceDiscount(invoiceId)
-                message("Была добавлена скидка постоянного покупателя 5%")
+            try{
+                val discount = skladDao.clientHasDiscount(clientId)
+                if (skladDao.getWarehouse(warehouseId).getBusyPlace() < count) {
+                    message("Невозможно отгрузить столько товара со склада")
+                    return@launch
+                }
+                var newPrice = price
+                if (discount) {
+                    message("Была добавлена скидка постоянного покупателя 5%")
+                    newPrice *= 0.95
+                }
+                skladDao.addOrder(date, clientId, sharedPreferences.get(UserId, -1), warehouseId, isCompleted, isCreated, newPrice, count)
+            } catch (exception: Throwable) {
+                message(exception.localizedMessage.orEmpty())
             }
             closeBottom()
         }
@@ -42,12 +52,10 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
     fun updateRequest(order: OrderWithInvoiceUserClient) {
         viewModelScope.launch(Dispatchers.IO) {
             val clients = skladDao.getClientList()
-            val invoice = skladDao.getInvoice(order.invoiceId).first()
-            val invoices = skladDao.getFreeInvoices().plus(invoice)
+            val warehouses = skladDao.getWarehouseWithProductList()
             when {
                 clients.isEmpty() -> message("Добавьте хотя бы одного клиента", R.id.action_global_clientFragment)
-                invoices.isEmpty() -> message("Добавьте хотя бы одну накладную расхода не использованную в заказе", R.id.action_global_invoiceFragment)
-                else -> action(OpenBottom(clients, invoices, order.toOrder()))
+                else -> action(OpenBottom(clients, warehouses, order.toOrder()))
             }
         }
     }
@@ -111,23 +119,25 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
         }
         viewModelScope.launch(Dispatchers.IO) {
             val clients = skladDao.getClientList()
-            val invoices = skladDao.getFreeInvoices()
+            val warehouses = skladDao.getWarehouseWithProductList()
             when {
+                warehouses.isEmpty() -> message("Добавьте хотя бы один склад", R.id.action_global_warehouseFragment)
                 clients.isEmpty() -> message("Добавьте хотя бы одного клиента", R.id.action_global_clientFragment)
-                invoices.isEmpty() -> message("Добавьте хотя бы одну накладную расхода не использованную в заказе", R.id.action_global_invoiceFragment)
-                else -> action(OpenBottom(clients, invoices, order))
+                else -> action(OpenBottom(clients, warehouses, order))
             }
         }
     }
 
     fun openPdf(order: OrderWithInvoiceUserClient) {
         viewModelScope.launch {
-            openPdf(
-                createHtml(
-                    order,
-                    skladDao.getInvoice(order.invoiceId).first()
+            skladDao.getInvoiceByOrder(order.id).firstOrNull()?.let {
+                openPdf(
+                    createHtml(
+                        order,
+                        it
+                    )
                 )
-            )
+            } ?: message("К заказу не прикреплена накладная")
         }
     }
 
@@ -151,7 +161,7 @@ class OrderViewModel @Inject constructor(): BaseViewModel<OrderState, OrderMutat
                 "<p>г. Москва, ул. 7-ая Парковая, д. 9/26</p>\n" +
                 "<p>т. 8 (768) 561-32-43</p>\n" +
                 "<p>Дата ${order.date}</p>\n" +
-                "<p style=\"text-align:center;font-family:Georgia, serif;font-size:14px;font-style:normal;font-weight:normal;color:#000000;background-color:#ffffff;\">Накладная расхода № ${order.invoiceId}</p>\n" +
+                "<p style=\"text-align:center;font-family:Georgia, serif;font-size:14px;font-style:normal;font-weight:normal;color:#000000;background-color:#ffffff;\">Накладная расхода № ${invoice.id}</p>\n" +
                 "<style>\n" +
                 "table.GeneratedTable {\n" +
                 "  width: 100%;\n" +
@@ -220,5 +230,5 @@ class OrderMutator: BaseMutator<OrderState>() {
 }
 
 sealed class OrderAction {
-    data class OpenBottom(val clients: List<Client>, val invoices: List<InvoiceWithWarehouse>, val order: Order? = null) : OrderAction()
+    data class OpenBottom(val clients: List<Client>, val warehouses: List<WarehouseWithProduct>, val order: Order? = null) : OrderAction()
 }

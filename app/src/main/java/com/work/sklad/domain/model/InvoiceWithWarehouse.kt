@@ -6,14 +6,15 @@ import java.time.LocalDate
 
 data class InvoiceWithWarehouse(
     val id: Int,
-    val product: String,
-    val warehouseId: Int,
-    val warehouse: String,
-    val price: Double,
-    val count: Int,
+    val product: String?,
+    val warehouseId: Int?,
+    val warehouse: String?,
+    val orderId: Int?,
+    val price: Double?,
+    val count: Int?,
     val manufactureDate: LocalDate,
     val expirationDate: LocalDate,
-    val unit: String
+    val unit: String?
 ): Serializable {
-    fun toInvoice() = Invoice(id, price, count, manufactureDate, expirationDate, warehouseId)
+    fun toInvoice() = Invoice(id, manufactureDate, expirationDate, orderId)
 }

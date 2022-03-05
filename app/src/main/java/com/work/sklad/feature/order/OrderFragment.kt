@@ -36,7 +36,8 @@ class OrderFragment: BaseFragment() {
 
     override val eventsAction: ((Event) -> Unit) = {
         when (it) {
-            is AddOrderEvent -> viewModel.addInvoice(it.date, it.clientId, it.invoiceId, it.isCompleted, it.isCreated)
+            is AddOrderEvent -> viewModel.addInvoice(it.date, it.clientId, it.isCompleted, it.isCreated, it.warehouseId, it.price, it.count)
+            is EditOrderEvent -> viewModel.update(it.order)
         }
     }
 
@@ -48,7 +49,7 @@ class OrderFragment: BaseFragment() {
                     is OpenBottom -> {
                         val bundle = bundleOf(
                             "clients" to it.clients.toTypedArray(),
-                            "invoices" to it.invoices.toTypedArray()
+                            "warehouses" to it.warehouses.toTypedArray()
                         ).apply {
                             it.order?.let { order ->
                                 putSerializable("order", order)

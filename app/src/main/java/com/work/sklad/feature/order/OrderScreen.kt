@@ -5,8 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Checkbox
-import androidx.compose.material.Text
-import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -15,20 +14,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.work.sklad.data.model.Client
 import com.work.sklad.data.model.Order
 import com.work.sklad.domain.model.InvoiceWithWarehouse
 import com.work.sklad.domain.model.OrderWithInvoiceUserClient
+import com.work.sklad.domain.model.WarehouseWithProduct
 import com.work.sklad.feature.common.Event
-import com.work.sklad.feature.common.compose.AppTypography
 import com.work.sklad.feature.common.compose.views.ButtonView
 import com.work.sklad.feature.common.compose.views.DatePicker
-import com.work.sklad.feature.common.compose.views.DropDownChangeDelete
+import com.work.sklad.feature.common.compose.views.EditText
 import com.work.sklad.feature.common.compose.views.Spinner
 import com.work.sklad.feature.common.utils.Listener
 import com.work.sklad.feature.common.utils.TypedListener
+import com.work.sklad.feature.main_activity.ShowMessage
 import java.time.LocalDate
 
 @Composable
@@ -68,11 +69,9 @@ fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdat
             Spacer(modifier = Modifier.padding(2.dp))
             androidx.compose.material3.Text(text = "Пользователь: ${order.user}")
             Spacer(modifier = Modifier.padding(2.dp))
-            androidx.compose.material3.Text(text = "Накладная №${order.invoiceId}")
-            Spacer(modifier = Modifier.padding(2.dp))
             androidx.compose.material3.Text(text = "Склад: ${order.warehouse}")
             Spacer(modifier = Modifier.padding(2.dp))
-            androidx.compose.material3.Text(text = "Заказ: ${order.product}")
+            androidx.compose.material3.Text(text = "Товар: ${order.product}")
             Spacer(modifier = Modifier.padding(2.dp))
             androidx.compose.material3.Text(text = "Дата: ${order.date}")
             Spacer(modifier = Modifier.padding(2.dp))
@@ -103,7 +102,7 @@ fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdat
                 })
             }
         }
-        androidx.compose.material3.Text(text = "Стоимость: ${order.price}", style = MaterialTheme.typography.titleLarge,
+        androidx.compose.material3.Text(text = order.price?.let { "Стоимость: ${order.price}" } ?: let { "" }, style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.constrainAs(count) {
                 top.linkTo(parent.top)
                 end.linkTo(parent.end)
@@ -113,7 +112,7 @@ fun WarehouseItem(order: OrderWithInvoiceUserClient, onDelete: Listener, onUpdat
 }
 
 @Composable
-fun AddOrderScreen(order: Order?, clients: Array<Client>, invoices: Array<InvoiceWithWarehouse>,
+fun AddOrderScreen(order: Order?, clients: Array<Client>, warehouses: Array<WarehouseWithProduct>,
                        listener: TypedListener<Event>) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -121,33 +120,42 @@ fun AddOrderScreen(order: Order?, clients: Array<Client>, invoices: Array<Invoic
             .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth()
     ) {
+        var count by rememberSaveable { mutableStateOf(order?.count?.toString() ?: "0") }
+        var price by rememberSaveable { mutableStateOf(order?.price?.toString() ?: "0.0") }
         var date1 by remember { mutableStateOf(order?.date ?: LocalDate.now()) }
         var client by rememberSaveable { mutableStateOf(order?.clientId?.let { clients.find { client -> client.id == it } } ?: clients.first()) }
-        var invoice by rememberSaveable { mutableStateOf(order?.invoiceId?.let { invoices.find { invoice -> invoice.id == it } } ?: invoices.first()) }
         var completed by rememberSaveable { mutableStateOf(order?.isCompleted ?: false) }
         var created by rememberSaveable { mutableStateOf(order?.isCreated ?: false) }
+        var warehouse by rememberSaveable { mutableStateOf(order?.warehouseId?.let { warehouses.find { warehouse -> warehouse.id == it } } ?: warehouses.first()) }
+        EditText(value = count, label = "Количество", keyboardType = KeyboardType.Number){ count = it }
+        EditText(value = price, label = "Цена", keyboardType = KeyboardType.Number){ price = it }
         DatePicker(title = "Дата заказа", date = date1, onDateChange = {date1=it})
         Spinner(name = "Клиент", stateList = clients, initialState = client, nameMapper = {it.company} ) {
             client = it
         }
-        Spinner(name = "Накладная", stateList = invoices, initialState = invoice, nameMapper = {"${it.id} - ${it.product} - ${it.count}"} ) {
-            invoice = it
+        Spinner(name = "Склад", stateList = warehouses, initialState = warehouse, nameMapper = {"${it.name} - ${it.product} -  ${it.getBusyPlace()} ${it.unit}"} ) {
+            warehouse = it
         }
         order?.let {
             Row(Modifier.padding(bottom = 5.dp).fillMaxWidth(0.5f)) {
                 Checkbox(checked = completed, onCheckedChange = {completed = it}, modifier = Modifier.padding(end = 5.dp))
-                Text(text = "Выполнен", color = Color.White)
+                Text(text = "Выполнен")
             }
             Row(Modifier.padding(bottom = 5.dp).fillMaxWidth(0.5f)) {
                 Checkbox(checked = created, onCheckedChange = {created = it}, modifier = Modifier.padding(end = 5.dp))
-                Text(text = "Собран", color = Color.White)
+                Text(text = "Собран")
             }
         }
         ButtonView(text = order?.let { "Редактировать" } ?: "Добавить") {
-            listener.invoke(order?.let {
-                EditOrderEvent(it.copy(date = date1, clientId = client.id, invoiceId = invoice.id,
-                    isCompleted = completed))
-            } ?: AddOrderEvent(date1, client.id, invoice.id, isCompleted = false, isCreated = false))
+            try {
+                listener.invoke(order?.let {
+                    EditOrderEvent(it.copy(date = date1, clientId = client.id, warehouseId = warehouse.id,
+                        isCompleted = completed, isCreated = created, count = count.toInt(), price = price.toDouble()))
+                } ?: AddOrderEvent(date1, client.id, isCompleted = false, isCreated = false, count = count.toInt(), price = price.toDouble(), warehouseId = warehouse.id))
+            } catch(e: Throwable) {
+                if (e is NumberFormatException) listener.invoke(ShowMessage("Неверный формат цены или количества"))
+            }
+
         }
     }
 }
